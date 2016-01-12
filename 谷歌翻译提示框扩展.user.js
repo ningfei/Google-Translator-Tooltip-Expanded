@@ -667,10 +667,10 @@ function extractResult(gTradStringArray) {
 
     // 0 - Full translation
     translation += '<small><a href="https://translate.google.com/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
-    translation += arr[0][0][1];
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined') translation += arr[0][i][1]; }
     translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
     translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
-    translation += arr[0][0][0];
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined') translation += arr[0][i][0]; }
     translation += '</em> <span id="texttospeechbuttonto"></span><br/><span id="translation2Element"></span><br/>';
     translation += '<a id="toggleShowDetails" ' + (!GM_getValue('details', 'false') ? 'style="display:none"': '') + '>显示详情▼</a>';
     translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"': '') + '><a id="toggleHideDetails">隐藏详情▲</a><br/>';
@@ -719,8 +719,8 @@ function extractResult(gTradStringArray) {
     // 转换文本为语音
     var fromText = '';
     var toText = '';
-    fromText += arr[0][0][1];
-    toText += arr[0][0][0];
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined') fromText += arr[0][i][1]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined') toText += arr[0][i][0]; }
     addTextTospeechLink(getId('texttospeechbuttonfrom'), arr[2], fromText); // arr[2] contains the detected input language
     addTextTospeechLink(getId('texttospeechbuttonto'), GM_getValue('to', 'auto') == 'auto' ? 'en': GM_getValue('to', 'auto'), toText); // 我不能找到一种方式来获得所检测到的目标语言，所以如果被请求的目标是'自动'，我使用的是英文文本到语音的语言
 }
@@ -730,13 +730,13 @@ function extractResult2(gTradStringArray) {
 
     var translation = '';
     translation += '[' + GM_getValue('to2', 'auto') + ']<em> ';
-    translation += arr[0][0][0];
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined') translation += arr[0][i][0]; }
     translation += '</em> <span id="texttospeechbuttonto2"></span>';
 
     translation2Element.innerHTML = translation;
 
     var toText2 = '';
-    toText2 += arr[0][0][0];
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined') toText2 += arr[0][i][0]; }
     addTextTospeechLink(getId('texttospeechbuttonto2'), GM_getValue('to2', 'auto') == 'auto' ? 'en': GM_getValue('to2', 'auto'), toText2);
 }
 
