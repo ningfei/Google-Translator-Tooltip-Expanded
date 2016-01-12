@@ -1,24 +1,24 @@
 // ==UserScript==
-// @name    		谷歌翻译提示框扩展
-// @description		这是对Google Translator Tooltip Expanded作简单的汉化和调整。基于http://userscripts-mirror.org/scripts/show/150664
-// @namespace		https://greasyfork.org/scripts/662/
-// @homepage	        https://greasyfork.org/scripts/662/
-// @author  		agunico
-// @version 		1.12
-// @icon			http://translate.google.cn/favicon.ico
-// @include			*
-// @grant			GM_getValue
-// @grant			GM_xmlhttpRequest
-// @grant			GM_log
-// @grant			GM_deleteValue
-// @grant			GM_addStyle
-// @grant			GM_openInTab
-// @grant			GM_registerMenuCommand
-// @grant			GM_setValue
+// @name            谷歌翻译提示框扩展
+// @description     这是对Google Translator Tooltip Expanded作简单的汉化和调整。基于http://userscripts-mirror.org/scripts/show/150664
+// @namespace       https://greasyfork.org/scripts/662/
+// @homepage        https://greasyfork.org/scripts/662/
+// @author          agunico
+// @version         1.12
+// @icon            http://translate.google.cn/favicon.ico
+// @include         *
+// @grant           GM_getValue
+// @grant           GM_xmlhttpRequest
+// @grant           GM_log
+// @grant           GM_deleteValue
+// @grant           GM_addStyle
+// @grant           GM_openInTab
+// @grant           GM_registerMenuCommand
+// @grant           GM_setValue
 // ==/UserScript==
 
 
-// Flexi 颜色拾取器 http://www.daviddurman.com/flexi-color-picker/# 
+// Flexi 颜色拾取器 http://www.daviddurman.com/flexi-color-picker/#
 (function(p, q, s) {
     var t = (p.SVGAngle || q.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") ? "SVG": "VML"),
     picker,
@@ -411,6 +411,10 @@
     p.ColorPicker = ColorPicker
 })(window, window.document);
 
+var UA = navigator.userAgent;
+var dictURL= "https://translate.google.de/translate_a/single?client=t";
+var ttsURL= "http://translate.google.de/translate_tts?client=t";
+
 const HREF_NO = 'javascript:void(0)';
 
 initCrossBrowserSupportForGmFunctions();
@@ -551,129 +555,123 @@ function lookup(evt) {
     {
         divResult.innerHTML = '<a style="color:#888;" href="http://' + txtSel + '" target="_blank" >' + txtSel + '</a>';
     } else {
-        var sl, tl, lang;
-        sl = GM_getValue('from') ? GM_getValue('from') : "auto";
-        tl = GM_getValue('to') ? GM_getValue('to') : "auto";
-        lang = sl + "|" + tl;
-        //currentURL = "https://www.google.cn/translate_t?text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Basic address, for web page parsing
-        //currentURL = "http://translate.google.cn/translate_a/t?client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // URL for GET request. This adress return an array as answer
-        currentPostData = "client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Data for a POST request, for handling long requests
-        GM_xmlhttpRequest({
-            /*method: 'GET',
-            url: currentURL,*/
-            method: 'POST',
-            url: 'http://translate.google.cn/translate_a/t',
-            data: currentPostData,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            onload: function(resp) {
-                try {
-                    extractResult(resp.responseText);
-                } catch(e) {
-                    GM_log(e);
-                }
-            }
-        });
+        var sl, tl;
+        sl = GM_getValue('from', 'auto');
+        tl = GM_getValue('to', 'auto');
+        Request(txtSel, sl, tl, extractResult);
 
         if (GM_getValue('to2', 'Disabled') != 'Disabled') {
-            sl = GM_getValue('from') ? GM_getValue('from') : "auto";
-            tl = GM_getValue('to2') ? GM_getValue('to2') : "auto";
-            lang = sl + "|" + tl;
-            currentPostData = "client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Data for a POST request, for handling long requests
-            GM_xmlhttpRequest({
-                method: 'POST',
-                url: 'http://translate.google.cn/translate_a/t',
-                data: currentPostData,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                onload: function(resp) {
-                    try {
-                        extractResult2(resp.responseText);
-                    } catch(e) {
-                        GM_log(e);
-                    }
-                }
-            });
+            sl = GM_getValue('from', 'auto');
+            tl = GM_getValue('to2', 'auto');
+            Request(txtSel, sl, tl, extractResult2);
         } else {
             translation2Element.innerHTML = '';
         }
     }
 }
 
-// Lanched when we select an other language in the setup menu 
+// Lanched when we select an other language in the setup menu
 // 当我们在设置菜单中选择另一种语言启动
 function quickLookup() {
     getId('divDic').style.fontSize = getId('optFontSize').value;
     getId('divDic').style.color = getId('optTextColor').value;
     getId('divResult').innerHTML = 'Loading...';
 
-    var sl, tl, lang;
+    var sl, tl;
     sl = getId('optSelLangFrom').value;
     tl = getId('optSelLangTo').value;
-    lang = sl + "|" + tl;
-    currentPostData = "client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Data for a POST request, for handling long requests
-    GM_xmlhttpRequest({
-        method: 'POST',
-        url: 'http://translate.google.cn/translate_a/t',
-        data: currentPostData,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        onload: function(resp) {
-            try {
-                extractResult(resp.responseText);
-            } catch(e) {
-                GM_log(e);
-            }
-        }
-    });
+    Request(txtSel, sl, tl, extractResult);
 
     if (getId('optSelLangTo2').value != 'Disabled') {
-        var sl, tl, lang;
+        var sl, tl;
         sl = getId('optSelLangFrom').value;
         tl = getId('optSelLangTo2').value;
-        currentPostData = "client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Data for a POST request, for handling long requests
-        GM_xmlhttpRequest({
-            method: 'POST',
-            url: 'http://translate.google.cn/translate_a/t',
-            data: currentPostData,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            onload: function(resp) {
-                try {
-                    extractResult2(resp.responseText);
-                } catch(e) {
-                    GM_log(e);
-                }
-            }
-        });
+        Request(txtSel, sl, tl, extractResult2);
     } else {
         translation2Element.innerHTML = '';
     }
 }
 
+// return token for the new API
+function googleTK(text) {
+    // view-source:https://translate.google.hu/translate/releases/twsfe_w_20151214_RC03/r/js/desktop_module_main.js
+    var RL=function(a,b){for(var c=0;c<b.length-2;c+=3){var d=b.charAt(c+2),d=d>=t?d.charCodeAt(0)-87:Number(d),d=b.charAt(c+1)==Tb?a>>>d:a<<d;a=b.charAt(c)==Tb?a+d&4294967295:a^d}return a};
+    var Vb="+-a^+6";
+    var t="a";
+    var Tb="+";
+    var Ub="+-3^+b+-f";
+    var dd=".";
+    var TL=function(a){
+        var b=parseInt((new Date()).getTime()/1000/3600);
+        for(var d=[],e=0,f=0;f<a.length;f++){
+            var g=a.charCodeAt(f);
+            128>g?d[e++]=g:(2048>g?d[e++]=g>>6|192:(55296==(g&64512)&&f+1<a.length&&56320==(a.charCodeAt(f+1)&64512)?(g=65536+((g&1023)<<10)+(a.charCodeAt(++f)&1023),d[e++]=g>>18|240,d[e++]=g>>12&63|128):d[e++]=g>>12|224,d[e++]=g>>6&63|128),d[e++]=g&63|128)
+        }
+        a=b;
+        for(e=0;e<d.length;e++) { a+=d[e],a=RL(a,Vb); }
+        a=RL(a,Ub);
+        0>a&&(a=(a&2147483647)+2147483648);
+        a%=1E6;
+        return a+dd+(a^b);
+    }
+    return TL(text);
+}
+
+// Google Translate Request
+function Request(txt, sl, tl, parse) {
+    var tk=googleTK(txt);
+    var Url = dictURL +
+        "&hl=auto" +
+        "&sl=" + sl + "&tl=" + tl +
+        "&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=2&trs=1&inputm=1&ssel=0&tsel=0&source=btn&kc=3"+
+        "&tk=" + tk +
+        "&q="+ encodeURI(txt);
+    var meth='POST';
+    var Data='';
+    var Hdr= {
+        "User-Agent": UA,
+        "Accept":  "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Encoding":  "gzip, deflate",
+        "Host": "www.google.com"
+    }
+    var Q=Url.split('&q=');
+    Url=Q[0];
+    Data='&q='+Q[1];
+    Hdr["Content-Length"]=Data.length+'';
+    Hdr["Content-Type"]="application/x-www-form-urlencoded; charset=UTF-8";
+    GM_xmlhttpRequest({
+        method: meth,
+        url: Url,
+        data: Data,
+        headers: Hdr,
+        onload: function(resp) {
+            try{
+                parse(resp.responseText)
+            }catch(e){
+                GM_log(e);
+          }
+        }
+    });
+}
+
 function extractResult(gTradStringArray) {
     var arr = eval(gTradStringArray); // eval is used to transform the string to an array. I alse made a custom parsing function, but it doesn't handle antislashed characters, so I prefer using eval()
     /*
-		Content of the gTrad array :
-		0 / 0:Translation 1:Source text
-		1 / i:Grammar / 0:Types (word, verb, ...) 1: Other translations
-		5 / Array of other translations
-	*/
+        Content of the gTrad array :
+        0 / 0:Translation 1:Source text
+        1 / i:Grammar / 0:Types (word, verb, ...) 1: Other translations
+        5 / Array of other translations
+    */
 
     var translation = '';
 
     // 0 - Full translation
     translation += '<small><a href="https://translate.google.com/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
-    for (var i = 0; i < arr[0].length; i++) translation += arr[0][i][1];
-    translation += '</a> <span id="texttospeachbuttonfrom"></span></small><br/>';
+    translation += arr[0][0][1];
+    translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
     translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
-    for (var i = 0; i < arr[0].length; i++) translation += arr[0][i][0];
-    translation += '</em> <span id="texttospeachbuttonto"></span><br/><span id="translation2Element"></span><br/>';
-
+    translation += arr[0][0][0];
+    translation += '</em> <span id="texttospeechbuttonto"></span><br/><span id="translation2Element"></span><br/>';
     translation += '<a id="toggleShowDetails" ' + (!GM_getValue('details', 'false') ? 'style="display:none"': '') + '>显示详情▼</a>';
     translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"': '') + '><a id="toggleHideDetails">隐藏详情▲</a><br/>';
     // 1 - Grammar
@@ -685,7 +683,7 @@ function extractResult(gTradStringArray) {
             }
             translation += '<br/>';
         }
-        translation += '<br/>';
+        // translation += '<br/>';
     }
 
     // 5 - Alternative parts
@@ -717,44 +715,69 @@ function extractResult(gTradStringArray) {
     },
     false);
 
-    // Create the Text to Speach 
+    // Create the Text to speech
     // 转换文本为语音
     var fromText = '';
     var toText = '';
-    for (var i = 0; i < arr[0].length; i++) fromText += arr[0][i][1];
-    for (var i = 0; i < arr[0].length; i++) toText += arr[0][i][0];
-    addTextToSpeachLink(getId('texttospeachbuttonfrom'), arr[2], fromText); // arr[2] contains the detected input language
-    addTextToSpeachLink(getId('texttospeachbuttonto'), GM_getValue('to', 'auto') == 'auto' ? 'en': GM_getValue('to', 'auto'), toText); // 我不能找到一种方式来获得所检测到的目标语言，所以如果被请求的目标是'自动'，我使用的是英文文本到语音的语言
+    fromText += arr[0][0][1];
+    toText += arr[0][0][0];
+    addTextTospeechLink(getId('texttospeechbuttonfrom'), arr[2], fromText); // arr[2] contains the detected input language
+    addTextTospeechLink(getId('texttospeechbuttonto'), GM_getValue('to', 'auto') == 'auto' ? 'en': GM_getValue('to', 'auto'), toText); // 我不能找到一种方式来获得所检测到的目标语言，所以如果被请求的目标是'自动'，我使用的是英文文本到语音的语言
 }
 
 function extractResult2(gTradStringArray) {
     var arr = eval(gTradStringArray);
 
     var translation = '';
-    translation += '#[' + GM_getValue('to2', 'auto') + ']<em> ';
-    for (var i = 0; i < arr[0].length; i++) translation += arr[0][i][0];
-    translation += '</em># <span id="texttospeachbuttonto2"></span>';
+    translation += '[' + GM_getValue('to2', 'auto') + ']<em> ';
+    translation += arr[0][0][0];
+    translation += '</em> <span id="texttospeechbuttonto2"></span>';
 
     translation2Element.innerHTML = translation;
 
     var toText2 = '';
-    for (var i = 0; i < arr[0].length; i++) toText2 += arr[0][i][0];
-    addTextToSpeachLink(getId('texttospeachbuttonto2'), GM_getValue('to2', 'auto') == 'auto' ? 'en': GM_getValue('to2', 'auto'), toText2);
+    toText2 += arr[0][0][0];
+    addTextTospeechLink(getId('texttospeechbuttonto2'), GM_getValue('to2', 'auto') == 'auto' ? 'en': GM_getValue('to2', 'auto'), toText2);
 }
 
-function addTextToSpeachLink(element, lang, text) {
+function addTextTospeechLink(element, lang, text) {
     if (GM_getValue('tts', false) == false) return;
-    var speachLink = document.createElement('a');
-    speachLink.href = 'http://translate.google.cn/translate_tts?tl=' + lang + '&q=' + text.replace(/[«»'"]/g, ' ');
-    speachLink.target = '_blank';
-    speachLink.innerHTML = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACaSURBVDhPvZOBDYAgDARZgVlYgRVYgRVYgZ3YiRVqHml8DRjUxEuItLaftoCRjywLWGslpdStg6lAjLHvdrz3YowR55zUWrt3IoBkBF/JOTd/CKF7BgKaPBIAaAP/SinNPkVxMgtw2fhiHlpFi+IkXgr2mIHCLS4LsK1tgP8EbltQXg+R+XSMCpfILF0kBSLMo6s84vFjWkNkAyh6GkTdlhEPAAAAAElFTkSuQmCC" height="16" width="16"/>';
-    element.appendChild(speachLink);
+
+    var img = document.createElement('img');
+    img.setAttribute('src', "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QEQDhUFQkzk7wAAAIpJREFUOMtj/P//PwNFgAQD3jMwMDRg6MVjwHw0/n4GBob/DAwM5xkYGAQIGTAfqhgdFEDF1+MzAKYZl9P6oXIO2AxA1owsAXc2lH7PwMCwHtmA/zgwPLygYYBi0f///xmYSIgwByT2QxiDiYFCQIoBB5DY8rgSEtmBSLVopEpCokpSJjozMVKanQFy4nkNOfntnwAAAABJRU5ErkJggg==");
+    img.setAttribute('width', '16');
+    img.setAttribute('height', '16');
+    img.setAttribute('align', "top");
+    element.appendChild(img);
+
+    element.addEventListener('click', function() { playTTS(lang, text) }, false);
+
+    // var speechLink = document.createElement('a');
+    // speechLink.setAttribute('align', "bottom");
+    // speechLink.href = Url;
+    // speechLink.target = '_blank';
+    // speechLink.innerHTML = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACaSURBVDhPvZOBDYAgDARZgVlYgRVYgRVYgZ3YiRVqHml8DRjUxEuItLaftoCRjywLWGslpdStg6lAjLHvdrz3YowR55zUWrt3IoBkBF/JOTd/CKF7BgKaPBIAaAP/SinNPkVxMgtw2fhiHlpFi+IkXgr2mIHCLS4LsK1tgP8EbltQXg+R+XSMCpfILF0kBSLMo6s84vFjWkNkAyh6GkTdlhEPAAAAAElFTkSuQmCC" height="16" width="16"/>';
+    // element.appendChild(speechLink);
     // 原图标url需要翻墙才能显示,换成字符串
+}
+
+// play TTS from Google Translator
+function playTTS(lang, text) {
+    text = text.replace(/[«»'"]/g, ' ');
+    tk = googleTK(text);
+    Url = ttsURL + "&ie=UTF-8&total=1&idx=0" +
+        "&tl=" + lang +
+        "&q=" + text +
+        "&textlen=" + text.length +
+        "&tk=" + tk;
+    var audio = new Audio( Url );
+    audio.preload = "auto";
+    audio.play();
 }
 
 function getSelection() {
     var txt = null;
-    //get selected text  
+    //get selected text
     //获得选中文本
     if (window.getSelection && !window.opera) // window.getSelection() bugs with Opera 12.16 and ViolentMonkey
     {
@@ -764,7 +787,7 @@ function getSelection() {
     } else if (document.selection) {
         txt = document.selection.createRange().text;
     }
-    return txt;
+    return txt.toString();
 }
 
 function openCloseOptions(evt) {
@@ -798,7 +821,7 @@ function openCloseOptions(evt) {
         } catch(err) {
             divOptions.innerHTML += '<p>错误 : 无法加载颜色拾取器 (已知在opera中存在此问题)</p>';
         }
-        //fields container  
+        //fields container
         divOptionsFields = createElement('p');
         divOptions.appendChild(divOptionsFields);
 
@@ -865,7 +888,7 @@ function openCloseOptions(evt) {
         divOptionsFields.appendChild(createElement('select', {
             id: 'optTextColor'
         },
-        null, '<option value="Gray">灰		色(默认)</option><option value="Black">黑		色</option><option value="White">白	色</option><option value="CadetBlue">藏		青</option><option value="ForestGreen">葱		绿</option><option value="FireBrick">砖		红</option>'));
+        null, '<option value="Gray">灰       色(默认)</option><option value="Black">黑       色</option><option value="White">白   色</option><option value="CadetBlue">藏       青</option><option value="ForestGreen">葱     绿</option><option value="FireBrick">砖       红</option>'));
         getId('optTextColor').value = GM_getValue('textcolor') ? GM_getValue('textcolor') : 'Gray';
         getId('optTextColor').addEventListener('change', quickLookup, false);
 

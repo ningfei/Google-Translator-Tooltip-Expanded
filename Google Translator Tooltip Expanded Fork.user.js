@@ -545,6 +545,11 @@
 	};
 	window.ColorPicker = ColorPicker;
 })(window, window.document);
+
+var UA = navigator.userAgent;
+var dictURL= "https://translate.google.com/translate_a/single?client=t";
+var ttsURL= "http://translate.google.com/translate_tts?client=t";
+
 const HREF_NO = 'javascript:void(0)';
 initCrossBrowserSupportForGmFunctions();
 var languagesGoogle = '<option value="auto">Detect language</option><option value="af">Afrikaans</option><option value="sq">Albanian</option><option value="ar">Arabic</option><option value="hy">Armenian</option><option value="az">Aerbaijani</option><option value="eu">Basque</option><option value="be">Belarusian</option><option value="bn">Bengali</option><option value="bg">Bulgarian</option><option value="ca">Catalan</option><option value="zh-CN">Chinese (simplified)</option><option value="zh-TW">Chinese (traditional)</option><option value="hr">Croatian</option><option value="cs">Czech</option><option value="da">Danish</option><option value="nl">Dutch</option><option value="en">English</option><option value="et">Estonian</option><option value="tl">Filipino</option><option value="fi">Finnish</option><option value="fr">French</option><option value="gl">Galician</option><option value="ka">Georgian</option><option value="de">German</option><option value="el">Greek</option><option value="ht">Haitian Creole</option><option value="iw">Hebrew</option><option value="hi">Hindi</option><option value="hu">Hungarian</option><option value="is">Icelandic</option><option value="id">Indonesian</option><option value="ga">Irish</option><option value="it">Italian</option><option  value="ja">Japanese</option><option value="ko">Korean</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="mk">Macedonian</option><option value="ms">Malay</option><option value="mt">Maltese</option><option value="no">Norwegian</option><option value="fa">Persian</option><option value="pl">Polish</option><option value="pt">Portuguese</option><option value="ro">Romanian</option><option value="ru">Russian</option><option value="sr">Serbian</option><option value="sk">Slovak</option><option  value="sl">Slovenian</option><option value="es">Spanish</option><option value="sw">Swahili</option><option value="sv">Swedish</option><option value="th">Thai</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="ur">Urdu</option><option value="vi">Vietnamese</option><option value="cy">Welsh</option><option value="yi">Yiddish</option>';
@@ -669,52 +674,15 @@ function lookup(evt) {
 	{
 		divResult.innerHTML = '<a style="color:#888;" href="http://' + txtSel + '" target="_blank" >' + txtSel + '</a>';
 	} else {
-		var sl,
-		tl,
-		lang;
+		var sl, tl;
 		sl = GM_getValue('from') ? GM_getValue('from') : "auto";
 		tl = GM_getValue('to') ? GM_getValue('to') : "auto";
-		lang = sl + "|" + tl;
-		//currentURL = "http://www.google.com/translate_t?text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Basic address, for web page parsing
-		//currentURL = "http://translate.google.fr/translate_a/t?client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // URL for GET request. This adress return an array as answer
-		currentPostData = "client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Data for a POST request, for handling long requests
-		GM_xmlhttpRequest({
-			/*method: 'GET',
-			url: currentURL,*/
-			method : 'POST',
-			url : 'http://translate.google.fr/translate_a/t',
-			data : currentPostData,
-			headers : {
-				'Content-Type' : 'application/x-www-form-urlencoded'
-			},
-			onload : function (resp) {
-				try {
-					extractResult(resp.responseText);
-				} catch (e) {
-					GM_log(e);
-				}
-			}
-		});
+		Request(txtSel, sl, tl, extractResult);
+
 		if (GM_getValue('to2', 'Disabled') != 'Disabled') {
 			sl = GM_getValue('from') ? GM_getValue('from') : "auto";
 			tl = GM_getValue('to2') ? GM_getValue('to2') : "auto";
-			lang = sl + "|" + tl;
-			currentPostData = "client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Data for a POST request, for handling long requests
-			GM_xmlhttpRequest({
-				method : 'POST',
-				url : 'http://translate.google.fr/translate_a/t',
-				data : currentPostData,
-				headers : {
-					'Content-Type' : 'application/x-www-form-urlencoded'
-				},
-				onload : function (resp) {
-					try {
-						extractResult2(resp.responseText);
-					} catch (e) {
-						GM_log(e);
-					}
-				}
-			});
+			Request(txtSel, sl, tl, extractResult2);
 		} else {
 			translation2Element.innerHTML = '';
 		}
@@ -725,54 +693,83 @@ function quickLookup() {
 	getId('divDic').style.fontSize = getId('optFontSize').value;
 	getId('divDic').style.color = getId('optTextColor').value;
 	getId('divResult').innerHTML = 'Loading...';
-	var sl,
-	tl,
-	lang;
+	var sl,tl;
 	sl = getId('optSelLangFrom').value;
 	tl = getId('optSelLangTo').value;
-	lang = sl + "|" + tl;
-	currentPostData = "client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Data for a POST request, for handling long requests
-	GM_xmlhttpRequest({
-		method : 'POST',
-		url : 'http://translate.google.fr/translate_a/t',
-		data : currentPostData,
-		headers : {
-			'Content-Type' : 'application/x-www-form-urlencoded'
-		},
-		onload : function (resp) {
-			try {
-				extractResult(resp.responseText);
-			} catch (e) {
-				GM_log(e);
-			}
-		}
-	});
+	Request(txtSel, sl, tl, extractResult);
+
 	if (getId('optSelLangTo2').value != 'Disabled') {
-		var sl,
-		tl,
-		lang;
+		var sl,tl;
 		sl = getId('optSelLangFrom').value;
 		tl = getId('optSelLangTo2').value;
-		currentPostData = "client=t&text=" + encodeURIComponent(txtSel) + "&langpair=" + lang; // Data for a POST request, for handling long requests
-		GM_xmlhttpRequest({
-			method : 'POST',
-			url : 'http://translate.google.fr/translate_a/t',
-			data : currentPostData,
-			headers : {
-				'Content-Type' : 'application/x-www-form-urlencoded'
-			},
-			onload : function (resp) {
-				try {
-					extractResult2(resp.responseText);
-				} catch (e) {
-					GM_log(e);
-				}
-			}
-		});
+		Request(txtSel, sl, tl, extractResult2);
 	} else {
 		translation2Element.innerHTML = '';
 	}
 }
+
+// return token for the new API
+function googleTK(text) {
+    // view-source:https://translate.google.hu/translate/releases/twsfe_w_20151214_RC03/r/js/desktop_module_main.js
+    var RL=function(a,b){for(var c=0;c<b.length-2;c+=3){var d=b.charAt(c+2),d=d>=t?d.charCodeAt(0)-87:Number(d),d=b.charAt(c+1)==Tb?a>>>d:a<<d;a=b.charAt(c)==Tb?a+d&4294967295:a^d}return a};
+    var Vb="+-a^+6";
+    var t="a";
+    var Tb="+";
+    var Ub="+-3^+b+-f";
+    var dd=".";
+    var TL=function(a){
+        var b=parseInt((new Date()).getTime()/1000/3600);
+        for(var d=[],e=0,f=0;f<a.length;f++){
+            var g=a.charCodeAt(f);
+            128>g?d[e++]=g:(2048>g?d[e++]=g>>6|192:(55296==(g&64512)&&f+1<a.length&&56320==(a.charCodeAt(f+1)&64512)?(g=65536+((g&1023)<<10)+(a.charCodeAt(++f)&1023),d[e++]=g>>18|240,d[e++]=g>>12&63|128):d[e++]=g>>12|224,d[e++]=g>>6&63|128),d[e++]=g&63|128)
+        }
+        a=b;
+        for(e=0;e<d.length;e++) { a+=d[e],a=RL(a,Vb); }
+        a=RL(a,Ub);
+        0>a&&(a=(a&2147483647)+2147483648);
+        a%=1E6;
+        return a+dd+(a^b);
+    }
+    return TL(text);
+}
+
+// Google Translate Request
+function Request(txt, sl, tl, parse) {
+    var tk=googleTK(txt);
+    var Url = dictURL +
+        "&hl=auto" +
+        "&sl=" + sl + "&tl=" + tl +
+        "&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=2&trs=1&inputm=1&ssel=0&tsel=0&source=btn&kc=3"+
+        "&tk=" + tk +
+        "&q="+ encodeURI(txt);
+    var meth='POST';
+    var Data='';
+    var Hdr= {
+        "User-Agent": UA,
+        "Accept":  "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Encoding":  "gzip, deflate",
+        "Host": "www.google.com"
+    }
+    var Q=Url.split('&q=');
+    Url=Q[0];
+    Data='&q='+Q[1];
+    Hdr["Content-Length"]=Data.length+'';
+    Hdr["Content-Type"]="application/x-www-form-urlencoded; charset=UTF-8";
+    GM_xmlhttpRequest({
+        method: meth,
+        url: Url,
+        data: Data,
+        headers: Hdr,
+        onload: function(resp) {
+            try{
+                parse(resp.responseText)
+            }catch(e){
+                GM_log(e);
+          }
+        }
+    });
+}
+
 function extractResult(gTradStringArray) {
 	var arr = eval(gTradStringArray); // eval is used to transform the string to an array. I alse made a custom parsing function, but it doesn't handle antislashed characters, so I prefer using eval()
 	/*
@@ -784,13 +781,11 @@ function extractResult(gTradStringArray) {
 	var translation = '';
 	// 0 - Full translation
 	translation += '<small><a href="https://translate.google.com/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
-	for (var i = 0; i < arr[0].length; i++)
-		translation += arr[0][i][1];
-	translation += '</a> <span id="texttospeachbuttonfrom"></span></small><br/>';
+	translation += arr[0][0][1];
+	translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
 	translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
-	for (var i = 0; i < arr[0].length; i++)
-		translation += arr[0][i][0];
-	translation += '</em> <span id="texttospeachbuttonto"></span><br/><span id="translation2Element"></span><br/>';
+	translation += arr[0][0][0];
+	translation += '</em> <span id="texttospeechbuttonto"></span><br/><span id="translation2Element"></span><br/>';
 	translation += '<a id="toggleShowDetails" ' + (!GM_getValue('details', 'false') ? 'style="display:none"' : '') + '>Show details</a>';
 	translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"' : '') + '><a id="toggleHideDetails">Hide details</a><br/>';
 	// 1 - Grammar
@@ -827,38 +822,51 @@ function extractResult(gTradStringArray) {
 		getId('toggleShowDetails').style.display = 'inline';
 		getId('divDetails').style.display = 'none';
 	}, false);
-	// Create the Text to Speach
+	// Create the Text to speech
 	var fromText = '';
 	var toText = '';
-	for (var i = 0; i < arr[0].length; i++)
-		fromText += arr[0][i][1];
-	for (var i = 0; i < arr[0].length; i++)
-		toText += arr[0][i][0];
-	addTextToSpeachLink(getId('texttospeachbuttonfrom'), arr[2], fromText); // arr[2] contains the detected input language
-	addTextToSpeachLink(getId('texttospeachbuttonto'), GM_getValue('to', 'auto') == 'auto' ? 'en' : GM_getValue('to', 'auto'), toText); // I cannot find a way to get the detected destination language, so if the requested destination is 'auto', I use the english Text to Speach language
+	fromText += arr[0][0][1];
+	toText += arr[0][0][0];
+	addTextTospeechLink(getId('texttospeechbuttonfrom'), arr[2], fromText); // arr[2] contains the detected input language
+	addTextTospeechLink(getId('texttospeechbuttonto'), GM_getValue('to', 'auto') == 'auto' ? 'en' : GM_getValue('to', 'auto'), toText); // I cannot find a way to get the detected destination language, so if the requested destination is 'auto', I use the english Text to speech language
 }
 function extractResult2(gTradStringArray) {
 	var arr = eval(gTradStringArray);
 	var translation = '';
 	translation += '#[' + GM_getValue('to2', 'auto') + ']<em> ';
-	for (var i = 0; i < arr[0].length; i++)
-		translation += arr[0][i][0];
-	translation += '</em># <span id="texttospeachbuttonto2"></span>';
+	translation += arr[0][0][0];
+	translation += '</em># <span id="texttospeechbuttonto2"></span>';
 	translation2Element.innerHTML = translation;
 	var toText2 = '';
-	for (var i = 0; i < arr[0].length; i++)
-		toText2 += arr[0][i][0];
-	addTextToSpeachLink(getId('texttospeachbuttonto2'), GM_getValue('to2', 'auto') == 'auto' ? 'en' : GM_getValue('to2', 'auto'), toText2);
+	toText2 += arr[0][0][0];
+	addTextTospeechLink(getId('texttospeechbuttonto2'), GM_getValue('to2', 'auto') == 'auto' ? 'en' : GM_getValue('to2', 'auto'), toText2);
 }
-function addTextToSpeachLink(element, lang, text) {
-	if (GM_getValue('tts', false) == false)
-		return;
-	var speachLink = document.createElement('a');
-	speachLink.href = 'http://translate.google.com/translate_tts?tl=' + lang + '&q=' + text.replace(/[«»'"]/g, ' ');
-	speachLink.target = '_blank';
-	speachLink.innerHTML = '<img src="http://www.trace-de-son.com/images/sound-icon.png" height="16" width="16"/>';
-	element.appendChild(speachLink);
+function addTextTospeechLink(element, lang, text) {
+    if (GM_getValue('tts', false) == false) return;
+
+    var img = document.createElement('img');
+    img.setAttribute('src', "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACaSURBVDhPvZOBDYAgDARZgVlYgRVYgRVYgZ3YiRVqHml8DRjUxEuItLaftoCRjywLWGslpdStg6lAjLHvdrz3YowR55zUWrt3IoBkBF/JOTd/CKF7BgKaPBIAaAP/SinNPkVxMgtw2fhiHlpFi+IkXgr2mIHCLS4LsK1tgP8EbltQXg+R+XSMCpfILF0kBSLMo6s84vFjWkNkAyh6GkTdlhEPAAAAAElFTkSuQmCC");
+    img.setAttribute('width', '16');
+    img.setAttribute('height', '16');
+    img.setAttribute('align', "top");
+    element.appendChild(img);
+
+    element.addEventListener('click', function() { playTTS(lang, text) }, false);
 }
+
+function playTTS(lang, text) {
+    text = text.replace(/[«»'"]/g, ' ');
+    tk = googleTK(text);
+    Url = ttsURL + "&ie=UTF-8&total=1&idx=0" +
+        "&tl=" + lang +
+        "&q=" + text +
+        "&textlen=" + text.length +
+        "&tk=" + tk;
+    var audio = new Audio( Url );
+    audio.preload = "auto";
+    audio.play();
+}
+
 function getSelection() {
 	var txt = null;
 	//get selected text
@@ -870,7 +878,7 @@ function getSelection() {
 	} else if (document.selection) {
 		txt = document.selection.createRange().text;
 	}
-	return txt;
+	return txt.toString();
 }
 function openCloseOptions(evt) {
 	var divOptions = getId('divOpt');
@@ -926,13 +934,13 @@ function openCloseOptions(evt) {
 			}, null, '<option value="Disabled">Disabled</option>' + languagesGoogle));
 		getId('optSelLangTo2').value = GM_getValue('to2') ? GM_getValue('to2') : 'Disabled';
 		getId('optSelLangTo2').addEventListener('change', quickLookup, false);
-		//use text to speach
+		//use text to speech
 		divOptionsFields.appendChild(createElement('br'));
 		divOptionsFields.appendChild(createElement('input', {
 				id : 'checkTTS',
 				type : 'checkbox'
 			}));
-		divOptionsFields.appendChild(createElement('span', null, null, '<span title="The feature has many issues. You often have to refresh the page to launch the .mp3 file. If you use the langage auto-detection, you have to change the langage in the url of the new tab." style="border-bottom:1px dashed">Display Text To Speach</span>'));
+		divOptionsFields.appendChild(createElement('span', null, null, '<span title="The feature has many issues. You often have to refresh the page to launch the .mp3 file. If you use the langage auto-detection, you have to change the langage in the url of the new tab." style="border-bottom:1px dashed">Display Text To speech</span>'));
 		getId('checkTTS').checked = GM_getValue('tts');
 		//hide details
 		divOptionsFields.appendChild(createElement('br'));
