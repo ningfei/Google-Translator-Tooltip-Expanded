@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name            谷歌翻译提示框扩展
-// @description     这是对Google Translator Tooltip Expanded作简单的汉化和调整。基于http://userscripts-mirror.org/scripts/show/150664
-// @namespace       https://greasyfork.org/scripts/662/
-// @homepage        https://greasyfork.org/scripts/662/
-// @author          agunico
-// @version         1.12
+// @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
+// @namespace       https://greasyfork.org/scripts/16203/
+// @homepage        https://greasyfork.org/scripts/16203/
+// @version         1.13
 // @icon            http://translate.google.cn/favicon.ico
 // @include         *
 // @grant           GM_getValue

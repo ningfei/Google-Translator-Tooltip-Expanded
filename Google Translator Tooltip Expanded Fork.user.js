@@ -1,20 +1,21 @@
 // ==UserScript==
-// @name			Google Translator Tooltip Expanded Fork
-// @description		Translates the selected text into a tooltip automatically. Based on Google Translation Tooltip MLiteKeysOn.
-// @namespace 		https://greasyfork.org/users/5764
-// @icon 			http://translate.google.com/favicon.ico
-// @version			1.12
-// @include			http*
-// @include			https*
-// @include			chrome*
-// @grant			GM_getValue
-// @grant			GM_xmlhttpRequest
-// @grant			GM_log
-// @grant			GM_deleteValue
-// @grant			GM_addStyle
-// @grant			GM_openInTab
-// @grant			GM_registerMenuCommand
-// @grant			GM_setValue
+// @name            Google Translator Tooltip Expanded Fork
+// @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
+// @namespace       https://greasyfork.org/scripts/16204/
+// @homepage        https://greasyfork.org/scripts/16204/
+// @version         1.13
+// @icon            http://translate.google.com/favicon.ico
+// @include         http*
+// @include         https*
+// @include         chrome*
+// @grant           GM_getValue
+// @grant           GM_xmlhttpRequest
+// @grant           GM_log
+// @grant           GM_deleteValue
+// @grant           GM_addStyle
+// @grant           GM_openInTab
+// @grant           GM_registerMenuCommand
+// @grant           GM_setValue
 // ==/UserScript==
 
 /**
