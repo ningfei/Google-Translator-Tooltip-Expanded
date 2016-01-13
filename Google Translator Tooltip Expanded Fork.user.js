@@ -797,7 +797,7 @@ function extractResult(gTradStringArray) {
 			}
 			translation += '<br/>';
 		}
-		translation += '<br/>';
+		//translation += '<br/>';
 	}
 	// 5 - Alternative parts
 	if (typeof arr[5] != 'undefined') {
@@ -868,17 +868,24 @@ function playTTS(lang, text) {
 }
 
 function getSelection() {
-	var txt = null;
+	var text = null;
 	//get selected text
 	if (window.getSelection && !window.opera) // window.getSelection() bugs with Opera 12.16 and ViolentMonkey
 	{
-		txt = window.getSelection();
+		if (document.activeElement &&
+		        (document.activeElement.tagName.toLowerCase() == "textarea" ||
+		        document.activeElement.tagName.toLowerCase() == "input")) {
+		    text = document.activeElement.value;
+		    text = text.substring (document.activeElement.selectionStart, document.activeElement.selectionEnd);
+		} else {
+		    text = window.getSelection().toString();
+		}
 	} else if (document.getSelection) {
-		txt = document.getSelection();
+		text = document.getSelection().toString();
 	} else if (document.selection) {
-		txt = document.selection.createRange().text;
+		text = document.selection.createRange().text;
 	}
-	return txt.toString();
+	return text;
 }
 function openCloseOptions(evt) {
 	var divOptions = getId('divOpt');

@@ -664,7 +664,6 @@ function extractResult(gTradStringArray) {
     */
 
     var translation = '';
-
     // 0 - Full translation
     translation += '<small><a href="https://translate.google.com/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined') translation += arr[0][i][1]; }
@@ -776,18 +775,25 @@ function playTTS(lang, text) {
 }
 
 function getSelection() {
-    var txt = null;
+    var text = null;
     //get selected text
     //获得选中文本
     if (window.getSelection && !window.opera) // window.getSelection() bugs with Opera 12.16 and ViolentMonkey
     {
-        txt = window.getSelection();
+        if (document.activeElement &&
+                (document.activeElement.tagName.toLowerCase() == "textarea" ||
+                document.activeElement.tagName.toLowerCase() == "input")) {
+            text = document.activeElement.value;
+            text = text.substring (document.activeElement.selectionStart, document.activeElement.selectionEnd);
+        } else {
+            text = window.getSelection().toString();
+        }
     } else if (document.getSelection) {
-        txt = document.getSelection();
+        text = document.getSelection().toString();
     } else if (document.selection) {
-        txt = document.selection.createRange().text;
+        text = document.selection.createRange().text;
     }
-    return txt.toString();
+    return text;
 }
 
 function openCloseOptions(evt) {
