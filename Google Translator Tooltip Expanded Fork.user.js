@@ -1,7 +1,8 @@
 // ==UserScript==
 // @name			Google Translator Tooltip Expanded Fork
 // @description		Translates the selected text into a tooltip automatically. Based on Google Translation Tooltip MLiteKeysOn.
-// @icon           https://raw.githubusercontent.com/Odyseus/GreasemonkeyScripts/master/GoogleTranslatorTooltipExpandedFork/g-translate-logo.png
+// @namespace 		https://greasyfork.org/users/5764
+// @icon 			http://translate.google.com/favicon.ico
 // @version			1.12
 // @include			http*
 // @include			https*
@@ -14,8 +15,8 @@
 // @grant			GM_openInTab
 // @grant			GM_registerMenuCommand
 // @grant			GM_setValue
-// @namespace https://greasyfork.org/users/5764
 // ==/UserScript==
+
 /**
  * ColorPicker - pure JavaScript color picker without using images, external CSS or 1px divs.
  * Copyright © 2011 David Durman, All rights reserved.
@@ -862,9 +863,26 @@ function playTTS(lang, text) {
         "&q=" + text +
         "&textlen=" + text.length +
         "&tk=" + tk;
-    var audio = new Audio( Url );
-    audio.preload = "auto";
-    audio.play();
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    var context = new AudioContext();
+    var source = context.createBufferSource();
+
+    var soundRequest = GM_xmlhttpRequest({
+        method: "GET",
+        url: Url,
+        responseType: 'arraybuffer',
+        onload: function(response) {
+            try {
+                    context.decodeAudioData(response.response, function(buffer) {
+                        source.buffer = buffer;
+                        source.connect(context.destination);
+                        source.start(0);
+                    });
+            } catch(e) {
+                GM_log(e);
+            }
+        }
+    });
 }
 
 function getSelection() {

@@ -769,9 +769,26 @@ function playTTS(lang, text) {
         "&q=" + text +
         "&textlen=" + text.length +
         "&tk=" + tk;
-    var audio = new Audio( Url );
-    audio.preload = "auto";
-    audio.play();
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    var context = new AudioContext();
+    var source = context.createBufferSource();
+
+    var soundRequest = GM_xmlhttpRequest({
+        method: "GET",
+        url: Url,
+        responseType: 'arraybuffer',
+        onload: function(response) {
+            try {
+                    context.decodeAudioData(response.response, function(buffer) {
+                        source.buffer = buffer;
+                        source.connect(context.destination);
+                        source.start(0);
+                    });
+            } catch(e) {
+                GM_log(e);
+            }
+        }
+    });
 }
 
 function getSelection() {
