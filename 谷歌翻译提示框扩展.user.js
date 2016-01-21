@@ -4,7 +4,7 @@
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
 // @version         1.13
-// @icon            http://translate.google.cn/favicon.ico
+// @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
 // @grant           GM_xmlhttpRequest
@@ -411,8 +411,8 @@
 })(window, window.document);
 
 var UA = navigator.userAgent;
-var dictURL= "https://translate.google.de/translate_a/single?client=t";
-var ttsURL= "http://translate.google.de/translate_tts?client=t";
+var dictURL= "https://translate.google.com/translate_a/single?client=t";
+var ttsURL= "http://translate.google.com/translate_tts?client=t";
 
 const HREF_NO = 'javascript:void(0)';
 
