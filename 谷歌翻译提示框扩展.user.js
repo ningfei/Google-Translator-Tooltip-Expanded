@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.13
+// @version         1.14
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -630,8 +630,7 @@ function Request(txt, sl, tl, parse) {
     var Hdr= {
         "User-Agent": UA,
         "Accept":  "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Encoding":  "gzip, deflate",
-        "Host": "www.google.com"
+        "Accept-Encoding":  "gzip, deflate"
     }
     var Q=Url.split('&q=');
     Url=Q[0];
