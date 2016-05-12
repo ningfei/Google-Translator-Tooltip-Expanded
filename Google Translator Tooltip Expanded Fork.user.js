@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.14
+// @version         1.15
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -549,8 +549,9 @@
 })(window, window.document);
 
 var UA = navigator.userAgent;
-var dictURL= "https://translate.google.com/translate_a/single?client=t";
-var ttsURL= "http://translate.google.com/translate_tts?client=t";
+var googleDomain = "translate.google.com";
+var dictURL= "https://" + googleDomain + "/translate_a/single?client=t";
+var ttsURL= "http://" + googleDomain + "/translate_tts?client=t";
 
 const HREF_NO = 'javascript:void(0)';
 initCrossBrowserSupportForGmFunctions();
@@ -710,29 +711,80 @@ function quickLookup() {
 	}
 }
 
+function init_google_value_tk() {
+    var url = "https://" + googleDomain;
+    var timeout = setTimeout( function(){ this.abort(); }, 2000);
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: url,
+        onreadystatechange: function(resp) {
+            if (resp.readyState == 4) {
+                clearTimeout(timeout);
+                if (resp.status == 200) {
+                    init_google_value_tk_parse(resp.responseText);
+                }
+            }
+        }
+    });
+}
+
+function init_google_value_tk_parse(responseText) {
+    // TKK=eval('((function(){var a\x3d4264492758;var b\x3d-1857761911;return 406375+\x27.\x27+(a+b)})())');
+    var res = /;TKK=(.*?\'\));/i.exec(responseText);
+    if (res != null) {
+        var res2 = /var a=(.*?);.*?var b=(.*?);.*?return (\d+)/i.exec(res[1].replace(/\\x3d/g, '='));
+        if (res2 != null) {
+            var tkk = Number(res2[3]) + '.' + (Number(res2[1]) + Number(res2[2]));
+            GM_setValue('google_value_tk', tkk);
+        }
+    };
+}
+
 // return token for the new API
 function googleTK(text) {
-    // view-source:https://translate.google.hu/translate/releases/twsfe_w_20151214_RC03/r/js/desktop_module_main.js
-    var RL=function(a,b){for(var c=0;c<b.length-2;c+=3){var d=b.charAt(c+2),d=d>=t?d.charCodeAt(0)-87:Number(d),d=b.charAt(c+1)==Tb?a>>>d:a<<d;a=b.charAt(c)==Tb?a+d&4294967295:a^d}return a};
+    // view-source:https://translate.google.com/translate/releases/twsfe_w_20151214_RC03/r/js/desktop_module_main.js && TKK from HTML
+    var uM = GM_getValue('google_value_tk');
+    if (uM == 'undefined' || uM == null) {
+        init_google_value_tk();
+    };
+    var cb="&";
+    var k="";
+    var Gf="=";
     var Vb="+-a^+6";
     var t="a";
-    var Tb="+";
-    var Ub="+-3^+b+-f";
-    var dd=".";
-    var TL=function(a){
-        var b=parseInt((new Date()).getTime()/1000/3600);
-        for(var d=[],e=0,f=0;f<a.length;f++){
-            var g=a.charCodeAt(f);
-            128>g?d[e++]=g:(2048>g?d[e++]=g>>6|192:(55296==(g&64512)&&f+1<a.length&&56320==(a.charCodeAt(f+1)&64512)?(g=65536+((g&1023)<<10)+(a.charCodeAt(++f)&1023),d[e++]=g>>18|240,d[e++]=g>>12&63|128):d[e++]=g>>12|224,d[e++]=g>>6&63|128),d[e++]=g&63|128)
+    var Yb="+";
+    var Zb="+-3^+b+-f";
+    var jd=".";
+    var sM=function(a){return function(){return a}}
+    var tM=function(a,b){for(var c=0;c<b.length-2;c+=3){var d=b.charAt(c+2),d=d>=t?d.charCodeAt(0)-87:Number(d),d=b.charAt(c+1)==Yb?a>>>d:a<<d;a=b.charAt(c)==Yb?a+d&4294967295:a^d}return a};
+    var vM=function(a){
+        var b;
+        if(null!==uM) {
+            b=uM;
+        }else{
+            b=sM(String.fromCharCode(84));var c=sM(String.fromCharCode(75));b=[b(),b()];
+            b[1]=c();
+            b=(uM=window[b.join(c())]||k)||k
         }
-        a=b;
-        for(e=0;e<d.length;e++) { a+=d[e],a=RL(a,Vb); }
-        a=RL(a,Ub);
+        var d=sM(String.fromCharCode(116)),c=sM(String.fromCharCode(107)),d=[d(),d()];
+        d[1]=c();
+        c=cb+d.join(k)+Gf;
+        d=b.split(jd);
+        b=Number(d[0])||0;
+
+        for(var e=[],f=0,g=0;g<a.length;g++){
+            var m=a.charCodeAt(g);
+            128>m?e[f++]=m:(2048>m?e[f++]=m>>6|192:(55296==(m&64512)&&g+1<a.length&&56320==(a.charCodeAt(g+1)&64512)?(m=65536+((m&1023)<<10)+(a.charCodeAt(++g)&1023),e[f++]=m>>18|240,e[f++]=m>>12&63|128):e[f++]=m>>12|224,e[f++]=m>>6&63|128),e[f++]=m&63|128)
+        }
+        a=b||0;
+        for(f=0;f<e.length;f++) { a+=e[f],a=tM(a,Vb)};
+        a=tM(a,Zb);
+        a^=Number(d[1])||0;
         0>a&&(a=(a&2147483647)+2147483648);
         a%=1E6;
-        return a+dd+(a^b);
-    }
-    return TL(text);
+        return a.toString()+jd+(a^b);
+    };
+    return vM(text);
 }
 
 // Google Translate Request
@@ -744,7 +796,7 @@ function Request(txt, sl, tl, parse) {
         "&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&ie=UTF-8&oe=UTF-8&otf=2&trs=1&inputm=1&ssel=0&tsel=0&source=btn&kc=3"+
         "&tk=" + tk +
         "&q="+ encodeURI(txt);
-    var meth='POST';
+    var method='POST';
     var Data='';
     var Hdr= {
         "User-Agent": UA,
@@ -757,7 +809,7 @@ function Request(txt, sl, tl, parse) {
     Hdr["Content-Length"]=Data.length+'';
     Hdr["Content-Type"]="application/x-www-form-urlencoded; charset=UTF-8";
     GM_xmlhttpRequest({
-        method: meth,
+        method: method,
         url: Url,
         data: Data,
         headers: Hdr,
@@ -781,7 +833,7 @@ function extractResult(gTradStringArray) {
 	 */
 	var translation = '';
 	// 0 - Full translation
-	translation += '<small><a href="https://translate.google.com/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
+	translation += '<small><a href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined') translation += arr[0][i][1]; }
 	translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
 	translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
