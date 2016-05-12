@@ -627,6 +627,7 @@ function googleTK(text) {
     var uM = GM_getValue('google_value_tk');
     if (uM == 'undefined' || uM == null) {
         init_google_value_tk();
+        uM = GM_getValue('google_value_tk');
     };
     var cb="&";
     var k="";
