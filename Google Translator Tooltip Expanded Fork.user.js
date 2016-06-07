@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.15
+// @version         1.16
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -956,6 +956,8 @@ function getSelection() {
 	} else if (document.selection) {
 		text = document.selection.createRange().text;
 	}
+	// text = text.replace(/[«»'"]/g, ' ');
+    text = text.replace(/&/g,'\u00E6').replace(/</g,'\u227A').replace(/\+/g,'\u2795');
 	return text;
 }
 function openCloseOptions(evt) {

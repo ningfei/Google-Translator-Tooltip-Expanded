@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.15
+// @version         1.16
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -861,6 +861,8 @@ function getSelection() {
     } else if (document.selection) {
         text = document.selection.createRange().text;
     }
+    // text = text.replace(/[«»'"]/g, ' ');
+    text = text.replace(/&/g,'\u00E6').replace(/</g,'\u227A').replace(/\+/g,'\u2795');
     return text;
 }
 
