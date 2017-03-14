@@ -799,8 +799,8 @@ function addTextTospeechLink(element, lang, text) {
     img.setAttribute('height', '16');
     img.setAttribute('align', "top");
     element.appendChild(img);
-
-    element.addEventListener('click', function() { playTTS(lang, text) }, false);
+    var context = new AudioContext();
+    element.addEventListener('click', function() { playTTS(lang, text, context) }, false);
 
     // var speechLink = document.createElement('a');
     // speechLink.setAttribute('align', "bottom");
@@ -812,7 +812,7 @@ function addTextTospeechLink(element, lang, text) {
 }
 
 // play TTS from Google Translator
-function playTTS(lang, text) {
+function playTTS(lang, text, context) {
     text = text.replace(/[«»'"]/g, ' ');
     tk = googleTK(text);
     Url = ttsURL + "&ie=UTF-8&total=1&idx=0" +
@@ -821,7 +821,7 @@ function playTTS(lang, text) {
         "&textlen=" + text.length +
         "&tk=" + tk;
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    var context = new AudioContext();
+    //var context = new AudioContext();
     var source = context.createBufferSource();
 
     var soundRequest = GM_xmlhttpRequest({
