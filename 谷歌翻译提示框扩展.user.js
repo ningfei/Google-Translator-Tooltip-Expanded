@@ -425,7 +425,7 @@ var imgLookup;
 var txtSel = encodeURIComponent(txtSel); // text selected
 var translation2Element = document.createElement('span');
 var currentURL;
-
+var context;
 var initialized = false;
 
 images();
@@ -482,7 +482,11 @@ function showLookupIcon(evt) {
     if (divLookup) {
         divLookup.parentNode.removeChild(divLookup);
     }
-
+    if(context!=null){
+        context.close();
+        context = null;
+    }
+    if(GM_getValue('tts', false) == true)context = new AudioContext();
     // Div container
     divLookup = createElement('div', {
         id: 'divLookup',
@@ -576,7 +580,7 @@ function quickLookup() {
     getId('divDic').style.fontSize = getId('optFontSize').value;
     getId('divDic').style.color = getId('optTextColor').value;
     getId('divResult').innerHTML = 'Loading...';
-
+    if((context == null) && (GM_getValue('tts', false) == true) ) context = new AudioContext();
     var sl, tl;
     sl = getId('optSelLangFrom').value;
     tl = getId('optSelLangTo').value;
@@ -799,7 +803,7 @@ function addTextTospeechLink(element, lang, text) {
     img.setAttribute('height', '16');
     img.setAttribute('align', "top");
     element.appendChild(img);
-    var context = new AudioContext();
+    //var context = new AudioContext();
     element.addEventListener('click', function() { playTTS(lang, text, context) }, false);
 
     // var speechLink = document.createElement('a');
