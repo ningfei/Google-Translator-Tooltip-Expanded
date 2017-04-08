@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.16
+// @version         1.17
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -721,7 +721,7 @@ function extractResult(gTradStringArray) {
     var translation = '';
     // 0 - Full translation
     translation += '<small><a href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined'&& arr[0][i][1] != null) translation += arr[0][i][1]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined' && arr[0][i][1] != null) translation += arr[0][i][1]; }
     translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
     translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
@@ -773,8 +773,8 @@ function extractResult(gTradStringArray) {
     // 转换文本为语音
     var fromText = '';
     var toText = '';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined'&& arr[0][i][1]!=null) fromText += arr[0][i][1]; }
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][0]!=null) toText += arr[0][i][0]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined' && arr[0][i][1]!=null) fromText += arr[0][i][1]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0]!=null) toText += arr[0][i][0]; }
 
     addTextTospeechLink(getId('texttospeechbuttonfrom'), arr[2], fromText); // arr[2] contains the detected input language
     addTextTospeechLink(getId('texttospeechbuttonto'), GM_getValue('to', 'auto') == 'auto' ? 'en': GM_getValue('to', 'auto'), toText); // 我不能找到一种方式来获得所检测到的目标语言，所以如果被请求的目标是'自动'，我使用的是英文文本到语音的语言
@@ -785,13 +785,13 @@ function extractResult2(gTradStringArray) {
 
     var translation = '';
     translation += '[' + GM_getValue('to2', 'auto') + ']<em> ';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][0]!=null) translation += arr[0][i][0]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0]!=null) translation += arr[0][i][0]; }
     translation += '</em> <span id="texttospeechbuttonto2"></span>';
 
     translation2Element.innerHTML = translation;
 
     var toText2 = '';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][0]!=null) toText2 += arr[0][i][0]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0]!=null) toText2 += arr[0][i][0]; }
     addTextTospeechLink(getId('texttospeechbuttonto2'), GM_getValue('to2', 'auto') == 'auto' ? 'en': GM_getValue('to2', 'auto'), toText2);
 }
 

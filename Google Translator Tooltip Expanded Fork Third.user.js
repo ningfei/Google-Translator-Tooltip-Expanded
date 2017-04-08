@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.16
+// @version         1.17
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -853,16 +853,16 @@ function extractResult(gTradStringArray) {
 	var translation = '';
 	// 0 - Full translation
 	translation += '<small><a href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined'&& arr[0][i][1] != null) translation += arr[0][i][1]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined' && arr[0][i][1] != null) translation += arr[0][i][1]; }
 	translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
 	translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][1] != null) translation += arr[0][i][0]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
 	translation += '</em> <span id="texttospeechbuttonto"></span><br/><span id="translation2Element"></span>';
     translation += '</em> <span id="texttospeechbuttonto"></span><br/><span id="translation3Element"></span><br/>';
 	translation += '<a id="toggleShowDetails" ' + (!GM_getValue('details', 'false') ? 'style="display:none"' : '') + '>Show details</a>';
 	translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"' : '') + '><a id="toggleHideDetails">Hide details</a><br/>';
 	// 1 - Grammar
-	if (typeof arr[1] != 'undefined'&& arr[0][i][1] != null) {
+	if (typeof arr[1] != 'undefined' && arr[1] != null) {
 		for (var i = 0; i < arr[1].length; i++) {
 			translation += '<strong>' + arr[1][i][0] + ' : </strong>';
 			for (var j = 0; j < arr[1][i][1].length; j++) {
@@ -873,9 +873,9 @@ function extractResult(gTradStringArray) {
 		//translation += '<br/>';
 	}
 	// 5 - Alternative parts
-	if (typeof arr[5] != 'undefined'&& arr[0][i][1] != null) {
+	if (typeof arr[5] != 'undefined' && arr[5] != null) {
 		for (var i = 0; i < arr[5].length; i++) {
-			if (typeof arr[5][i][2] != 'undefined'&& arr[0][i][1] != null) { // 5/i/2 array of alternatives, 5/i/0 the part of the text we are studying
+			if (typeof arr[5][i][2] != 'undefined' && arr[5][i][2] != null) { // 5/i/2 array of alternatives, 5/i/0 the part of the text we are studying
 				translation += '<strong>' + arr[5][i][0] + ' : </strong>';
 				for (var j = 0; j < arr[5][i][2].length; j++) {
 					translation += ((j == 0) ? '' : ', ') + arr[5][i][2][j][0];
@@ -899,8 +899,8 @@ function extractResult(gTradStringArray) {
 	// Create the Text to speech
 	var fromText = '';
 	var toText = '';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined'&& arr[0][i][1] != null) fromText += arr[0][i][1]; }
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][1] != null) toText += arr[0][i][0]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined' && arr[0][i][1] != null) fromText += arr[0][i][1]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) toText += arr[0][i][0]; }
 	addTextTospeechLink(getId('texttospeechbuttonfrom'), arr[2], fromText); // arr[2] contains the detected input language
 	addTextTospeechLink(getId('texttospeechbuttonto'), GM_getValue('to', 'auto') == 'auto' ? 'en' : GM_getValue('to', 'auto'), toText); // I cannot find a way to get the detected destination language, so if the requested destination is 'auto', I use the english Text to speech language
 }
@@ -908,22 +908,22 @@ function extractResult2(gTradStringArray) {
 	var arr = eval(gTradStringArray);
 	var translation = '';
 	translation += '#[' + GM_getValue('to2', 'auto') + ']<em> ';
-	for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][1] != null) translation += arr[0][i][0]; }
+	for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
 	translation += '</em># <span id="texttospeechbuttonto2"></span>';
 	translation2Element.innerHTML = translation;
 	var toText2 = '';
-	for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][1] != null) toText2 += arr[0][i][0]; }
+	for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) toText2 += arr[0][i][0]; }
 	addTextTospeechLink(getId('texttospeechbuttonto2'), GM_getValue('to2', 'auto') == 'auto' ? 'en' : GM_getValue('to2', 'auto'), toText2);
 }
 function extractResult3(gTradStringArray) {
     var arr = eval(gTradStringArray);
     var translation = '';
     translation += '#[' + GM_getValue('to3', 'auto') + ']<em> ';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][1] != null) translation += arr[0][i][0]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
     translation += '</em># <span id="texttospeechbuttonto3"></span>';
     translation3Element.innerHTML = translation;
     var toText3 = '';
-    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined'&& arr[0][i][1] != null) toText3 += arr[0][i][0]; }
+    for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) toText3 += arr[0][i][0]; }
     addTextTospeechLink(getId('texttospeechbuttonto3'), GM_getValue('to3', 'auto') == 'auto' ? 'en' : GM_getValue('to3', 'auto'), toText3);
 }
 function addTextTospeechLink(element, lang, text) {
