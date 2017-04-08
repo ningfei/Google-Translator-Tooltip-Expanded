@@ -907,9 +907,9 @@ function extractResult(gTradStringArray) {
 function extractResult2(gTradStringArray) {
 	var arr = eval(gTradStringArray);
 	var translation = '';
-	translation += '#[' + GM_getValue('to2', 'auto') + ']<em> ';
+	translation += '#[' + GM_getValue('to2', 'auto') + ']<em>  ';
 	for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
-	translation += '</em># <span id="texttospeechbuttonto2"></span>';
+	translation += '</em>  <span id="texttospeechbuttonto2"></span>';
 	translation2Element.innerHTML = translation;
 	var toText2 = '';
 	for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) toText2 += arr[0][i][0]; }
@@ -918,9 +918,9 @@ function extractResult2(gTradStringArray) {
 function extractResult3(gTradStringArray) {
     var arr = eval(gTradStringArray);
     var translation = '';
-    translation += '#[' + GM_getValue('to3', 'auto') + ']<em> ';
+    translation += '#[' + GM_getValue('to3', 'auto') + ']<em>  ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
-    translation += '</em># <span id="texttospeechbuttonto3"></span>';
+    translation += '</em>  <span id="texttospeechbuttonto3"></span>';
     translation3Element.innerHTML = translation;
     var toText3 = '';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) toText3 += arr[0][i][0]; }
