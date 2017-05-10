@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.17
+// @version         1.18
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -842,22 +842,21 @@ function extractResult(gTradStringArray) {
 	translation += '</em> <span id="texttospeechbuttonto"></span><br/><span id="translation2Element"></span><br/>';
 	translation += '<a id="toggleShowDetails" ' + (!GM_getValue('details', 'false') ? 'style="display:none"' : '') + '>Show details</a>';
 	translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"' : '') + '><a id="toggleHideDetails">Hide details</a><br/>';
+
 	// 1 - Grammar
 	if (typeof arr[1] != 'undefined' && arr[1] != null) {
 		for (var i = 0; i < arr[1].length; i++) {
 			translation += '<strong>' + arr[1][i][0] + ' : </strong>';
-			for (var j = 0; j < arr[1][i][1].length; j++) {
-				translation += ((j == 0) ? '' : ', ') + arr[1][i][1][j];
-			}
+			translation += arr[1][i][1].join(', ');
 			translation += '<br/>';
 		}
-		//translation += '<br/>';
 	}
+
 	// 5 - Alternative parts
 	if (typeof arr[5] != 'undefined' && arr[5] != null) {
 		for (var i = 0; i < arr[5].length; i++) {
 			if (typeof arr[5][i][2] != 'undefined' && arr[5][i][2] != null) { // 5/i/2 array of alternatives, 5/i/0 the part of the text we are studying
-				translation += '<strong>' + arr[5][i][0] + ' : </strong>';
+				translation += '<strong>synonyms: </strong>';
 				for (var j = 0; j < arr[5][i][2].length; j++) {
 					translation += ((j == 0) ? '' : ', ') + arr[5][i][2][j][0];
 				}
@@ -865,7 +864,34 @@ function extractResult(gTradStringArray) {
 			}
 		}
 	}
+
+	// 12 and 11 - definitions and synonyms
+    if (typeof arr[12] != 'undefined' && arr[12] != null) {
+        for (var i = 0; i < arr[12].length; i++) {
+            if (typeof arr[12][i][1] != 'undefined' && arr[12][i][1] != null) { // 11/i/1 array of alternatives, 11/i/0 the part of the text we are studying
+                for (var j = 0; j < arr[12][i][1].length; j++) {
+                    translation += '<strong>' + arr[12][i][0] + ': </strong>';
+                    translation += arr[12][i][1][j][0];
+                    translation += '<br/>';
+                    if (typeof arr[11] != 'undefined' && arr[11] != null) {
+	                    if (typeof arr[11][i] != 'undefined' && [11][i] != null) {
+	                        for (var k = 0; k < arr[11][i][1].length; k++) {
+	                        	if (arr[12][i][1][j][1] == arr[11][i][1][k][1]) {
+	                        		translation += '<i>synonyms:</i> ';
+	                        		translation += arr[11][i][1][k][0].join(', ');
+	                        		translation += '<br/>';
+	                        		break;
+	                        	}
+	                        }
+	                    }
+	                }
+                }
+            }
+        }
+    }
+
 	translation += '</span>'; // Detail end
+
 	getId('divResult').innerHTML = '<p style="margin:0px">' + translation + '</p>';
 	getId('translation2Element').appendChild(translation2Element); // Optional second translation
 	getId('toggleShowDetails').addEventListener('click', function () {
