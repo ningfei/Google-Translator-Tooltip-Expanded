@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.18
+// @version         1.19
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -725,56 +725,85 @@ function extractResult(gTradStringArray) {
     translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
     translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
-    translation += '</em> <span id="texttospeechbuttonto"></span><br/><span id="translation2Element"></span><br/>';
+    translation += '</em> <span id="texttospeechbuttonto"></span><br/>';
+    translation += '<span id="translation2Element"></span>';
     translation += '<a id="toggleShowDetails" ' + (!GM_getValue('details', 'false') ? 'style="display:none"': '') + '>显示详情▼</a>';
     translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"': '') + '><a id="toggleHideDetails">隐藏详情▲</a><br/>';
 
     // 1 - Grammar
+    if (typeof arr[1] != 'undefined' && arr[1] != null ||
+        typeof arr[5] != 'undefined' && arr[5] != null ||
+        typeof arr[14] != 'undefined' && arr[14] != null) {
+        translation += '<strong>翻译</strong><br/>';
+    }
+
     if (typeof arr[1] != 'undefined' && arr[1] != null) {
         for (var i = 0; i < arr[1].length; i++) {
-            translation += '<strong>' + arr[1][i][0] + ': </strong>';
+            translation += arr[1][i][0] + ': ';
             translation += arr[1][i][1].join(', ');
             translation += '<br/>';
         }
     }
 
-    // 5 - Alternative parts
-    if (typeof arr[5] != 'undefined' && arr[5] != null) {
-        for (var i = 0; i < arr[5].length; i++) {
-            if (typeof arr[5][i][2] != 'undefined' && arr[5][i][2] != null) { // 5/i/2 array of alternatives, 5/i/0 the part of the text we are studying
-                translation += '<strong>同义词: </strong>';
-                for (var j = 0; j < arr[5][i][2].length; j++) {
-                    translation += ((j == 0) ? '': ', ') + arr[5][i][2][j][0];
+    // 5 - 备选翻译
+    if (GM_getValue('alternatives', 'true')) {
+        if (typeof arr[5] != 'undefined' && arr[5] != null) {
+            for (var i = 0; i < arr[5].length; i++) {
+                if (typeof arr[5][i][2] != 'undefined' && arr[5][i][2] != null) { // 5/i/2 array of alternatives, 5/i/0 the part of the text we are studying
+                    translation += '<i>备选: </i>';
+                    for (var j = 0; j < arr[5][i][2].length; j++) {
+                        translation += '<i>' + ((j == 0) ? '': ', ') + arr[5][i][2][j][0] + '</i>';
+                    }
+                    translation += '<br/>';
                 }
-                translation += '<br/>';
             }
         }
     }
 
-    // 12 and 11 - definitions and synonyms
+    // 14 - 另请参阅
+    if (typeof arr[14] != 'undefined' && arr[14] != null) {
+        // for (var i = 0; i < arr[14].length; i++) {
+            translation += '<i>参阅: </i>';
+            translation += '<i>' + arr[14][0].join(', ') + '</i>';
+            translation += '<br/>';
+        // }
+    }
+
+    if ((typeof arr[1] != 'undefined' && arr[1] != null ||
+         typeof arr[5] != 'undefined' && arr[5] != null ||
+         typeof arr[14] != 'undefined' && arr[14] != null) &&
+        (typeof arr[12] != 'undefined' && arr[12] != null)) {
+        translation += '<br/>';
+    }
+
+    // 12 and 11 - 解释 和 同义词
     if (typeof arr[12] != 'undefined' && arr[12] != null) {
+        translation += '<strong>解释</strong><br/>';
         for (var i = 0; i < arr[12].length; i++) {
             if (typeof arr[12][i][1] != 'undefined' && arr[12][i][1] != null) { // 11/i/1 array of alternatives, 11/i/0 the part of the text we are studying
                 for (var j = 0; j < arr[12][i][1].length; j++) {
-                    translation += '<strong>' + arr[12][i][0] + ': </strong>';
+                    translation += arr[12][i][0] + ': ';
                     translation += arr[12][i][1][j][0];
                     translation += '<br/>';
-                    if (typeof arr[11] != 'undefined' && arr[11] != null) {
-	                    if (typeof arr[11][i] != 'undefined' && [11][i] != null) {
-	                        for (var k = 0; k < arr[11][i][1].length; k++) {
-	                        	if (arr[12][i][1][j][1] == arr[11][i][1][k][1]) {
-	                        		translation += '<i>同义词:</i> ';
-	                        		translation += arr[11][i][1][k][0].join(', ');
-	                        		translation += '<br/>';
-	                        		break;
-	                        	}
-	                        }
-	                    }
-	                }
+                    if (GM_getValue('synonyms', 'true')) {
+                        if (typeof arr[11] != 'undefined' && arr[11] != null) {
+                            if (typeof arr[11][i] != 'undefined' && [11][i] != null) {
+                                for (var k = 0; k < arr[11][i][1].length; k++) {
+                                    if (arr[12][i][1][j][1] == arr[11][i][1][k][1]) {
+                                        translation += '<i>同义: </i> ';
+                                        translation += '<i>'+arr[11][i][1][k][0].join(', ')+'</i>';
+                                        translation += '<br/>';
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+
 
     translation += '</span>'; // Detail end
 
@@ -810,7 +839,7 @@ function extractResult2(gTradStringArray) {
     var translation = '';
     translation += '[' + GM_getValue('to2', 'auto') + ']<em> ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0]!=null) translation += arr[0][i][0]; }
-    translation += '</em> <span id="texttospeechbuttonto2"></span>';
+    translation += '</em> <span id="texttospeechbuttonto2"></span><br/>';
 
     translation2Element.innerHTML = translation;
 
@@ -908,30 +937,30 @@ function openCloseOptions(evt) {
         getId('optionsLink').style.visibility = 'hidden';
 
         // 颜色拾取器, 在Opera下不工作
-        try {
-            if (!window.divColorPicker) {
-                window.divColorPicker = createElement('div', {
-                    id: 'optPicker',
-                    class: 'cp-small'
-                });
+        // try {
+        //     if (!window.divColorPicker) {
+        //         window.divColorPicker = createElement('div', {
+        //             id: 'optPicker',
+        //             class: 'cp-small'
+        //         });
 
-                window.colorPicker = ColorPicker(window.divColorPicker,
-                function(hex, hsv, rgb) {
-                    getId('divDic').style.backgroundColor = hex;
-                });
+        //         window.colorPicker = ColorPicker(window.divColorPicker,
+        //         function(hex, hsv, rgb) {
+        //             getId('divDic').style.backgroundColor = hex;
+        //         });
 
-            }
-            window.colorPicker.setHex(GM_getValue('backgroundColor', '#EDF4FC'));
-            divOptions.appendChild(window.divColorPicker);
-        } catch(err) {
-            divOptions.innerHTML += '<p>错误 : 无法加载颜色拾取器 (已知在opera中存在此问题)</p>';
-        }
+        //     }
+        //     window.colorPicker.setHex(GM_getValue('backgroundColor', '#EDF4FC'));
+        //     divOptions.appendChild(window.divColorPicker);
+        // } catch(err) {
+        //     divOptions.innerHTML += '<p>错误 : 无法加载颜色拾取器 (已知在opera中存在此问题)</p>';
+        // }
         //fields container
         divOptionsFields = createElement('p');
         divOptions.appendChild(divOptionsFields);
 
         //从
-        divOptionsFields.appendChild(createElement('span', null, null, '从 :'));
+        divOptionsFields.appendChild(createElement('span', null, null, '从: &nbsp;&nbsp;&nbsp;&nbsp;'));
         divOptionsFields.appendChild(createElement('select', {
             id: 'optSelLangFrom'
         },
@@ -941,7 +970,7 @@ function openCloseOptions(evt) {
 
         //到
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, ' 到 :'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' 到: &nbsp;&nbsp;&nbsp;&nbsp;'));
         divOptionsFields.appendChild(createElement('select', {
             id: 'optSelLangTo'
         },
@@ -951,7 +980,7 @@ function openCloseOptions(evt) {
 
         //到2
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, ' 到(2):'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' 到(2): '));
         divOptionsFields.appendChild(createElement('select', {
             id: 'optSelLangTo2'
         },
@@ -977,11 +1006,31 @@ function openCloseOptions(evt) {
         divOptionsFields.appendChild(createElement('span', null, null, '默认隐藏详细信息'));
         getId('checkDetails').checked = GM_getValue('details');
 
+        //详情中显示备选翻译
+        divOptionsFields.appendChild(createElement('br'));
+        divOptionsFields.appendChild(createElement('input', {
+            id: 'checkAlternatives',
+            type: 'checkbox'
+        }));
+        divOptionsFields.appendChild(createElement('span', null, null, '详情中显示备选翻译'));
+        getId('checkAlternatives').checked = GM_getValue('alternatives');
+
+        //解释中显示同义词
+        divOptionsFields.appendChild(createElement('br'));
+        divOptionsFields.appendChild(createElement('input', {
+            id: 'checkSynonyms',
+            type: 'checkbox'
+        }));
+        divOptionsFields.appendChild(createElement('span', null, null, '解释中显示同义词'));
+        getId('checkSynonyms').checked = GM_getValue('synonyms');
+
+
         //字体大小
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, '字体大小 :'));
+        divOptionsFields.appendChild(createElement('span', null, null, '字体大小: '));
         divOptionsFields.appendChild(createElement('select', {
-            id: 'optFontSize'
+            id: 'optFontSize',
+            style: 'width:128px'
         },
         null, '<option value="x-small">超小字(12px)</option><option value="small">小(13px)（默认）</option><option value="medium">中等(16px)</option><option value="large">大(18px)</option>'));
         getId('optFontSize').value = GM_getValue('fontsize') ? GM_getValue('fontsize') : 'small';
@@ -989,9 +1038,10 @@ function openCloseOptions(evt) {
 
         //文本颜色
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, '文本颜色:'));
+        divOptionsFields.appendChild(createElement('span', null, null, '文本颜色: '));
         divOptionsFields.appendChild(createElement('select', {
-            id: 'optTextColor'
+            id: 'optTextColor',
+            style: 'width:128px'
         },
         null, '<option value="Gray">灰       色(默认)</option><option value="Black">黑       色</option><option value="White">白   色</option><option value="CadetBlue">藏       青</option><option value="ForestGreen">葱     绿</option><option value="FireBrick">砖       红</option>'));
         getId('optTextColor').value = GM_getValue('textcolor') ? GM_getValue('textcolor') : 'Gray';
@@ -1054,6 +1104,8 @@ function saveOptions(evt) {
     var to2 = getId('optSelLangTo2').value;
     var tts = getId('checkTTS').checked;
     var details = getId('checkDetails').checked;
+    var alternatives = getId('checkAlternatives').checked;
+    var synonyms = getId('checkSynonyms').checked;
     var fontsize = getId('optFontSize').value;
     var textcolor = getId('optTextColor').value;
     var ctrl = getId('checkCtrl').checked;
@@ -1065,6 +1117,8 @@ function saveOptions(evt) {
     GM_setValue('to2', to2);
     GM_setValue('tts', tts);
     GM_setValue('details', details);
+    GM_setValue('alternatives', alternatives);
+    GM_setValue('synonyms', synonyms);
     GM_setValue('fontsize', fontsize);
     GM_setValue('textcolor', textcolor);
     GM_setValue('ctrl', ctrl);
