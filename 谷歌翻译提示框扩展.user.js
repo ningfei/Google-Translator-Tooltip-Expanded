@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.19
+// @version         1.20
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -720,15 +720,15 @@ function extractResult(gTradStringArray) {
 
     var translation = '';
     // 0 - Full translation
-    translation += '<small><a href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
+    translation += '<small><a style="color:#1a0dab;" href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined' && arr[0][i][1] != null) translation += arr[0][i][1]; }
     translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
-    translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
+    translation += '[' + GM_getValue('to', 'auto') + '] ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
-    translation += '</em> <span id="texttospeechbuttonto"></span><br/>';
+    translation += ' <span id="texttospeechbuttonto"></span><br/>';
     translation += '<span id="translation2Element"></span>';
-    translation += '<a id="toggleShowDetails" ' + (!GM_getValue('details', 'false') ? 'style="display:none"': '') + '>显示详情▼</a>';
-    translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"': '') + '><a id="toggleHideDetails">隐藏详情▲</a><br/>';
+    translation += '<a id="toggleShowDetails" style="color:#000;' + (!GM_getValue('details', 'false') ? 'display:none;"': '"') + '>显示详情▼</a>';
+    translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none;"': '') + '><a style="color:#000;" id="toggleHideDetails">隐藏详情▲</a><br/>';
 
     // 1 - Grammar
     if (typeof arr[1] != 'undefined' && arr[1] != null ||
@@ -769,12 +769,12 @@ function extractResult(gTradStringArray) {
         // }
     }
 
-    if ((typeof arr[1] != 'undefined' && arr[1] != null ||
-         typeof arr[5] != 'undefined' && arr[5] != null ||
-         typeof arr[14] != 'undefined' && arr[14] != null) &&
-        (typeof arr[12] != 'undefined' && arr[12] != null)) {
-        translation += '<br/>';
-    }
+    // if ((typeof arr[1] != 'undefined' && arr[1] != null ||
+    //      typeof arr[5] != 'undefined' && arr[5] != null ||
+    //      typeof arr[14] != 'undefined' && arr[14] != null) &&
+    //     (typeof arr[12] != 'undefined' && arr[12] != null)) {
+    //     translation += '<br/>';
+    // }
 
     // 12 and 11 - 解释 和 同义词
     if (typeof arr[12] != 'undefined' && arr[12] != null) {
@@ -807,7 +807,7 @@ function extractResult(gTradStringArray) {
 
     translation += '</span>'; // Detail end
 
-    getId('divResult').innerHTML = '<p style="margin:0px">' + translation + '</p>';
+    getId('divResult').innerHTML = '<p style="margin:0px;padding:0px;line-height:150%;">' + translation + '</p>';
     getId('translation2Element').appendChild(translation2Element); // Optional second translation
     getId('toggleShowDetails').addEventListener('click',
     function() {
@@ -837,9 +837,9 @@ function extractResult2(gTradStringArray) {
     var arr = eval(gTradStringArray);
 
     var translation = '';
-    translation += '[' + GM_getValue('to2', 'auto') + ']<em> ';
+    translation += '[' + GM_getValue('to2', 'auto') + '] ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0]!=null) translation += arr[0][i][0]; }
-    translation += '</em> <span id="texttospeechbuttonto2"></span><br/>';
+    translation += ' <span id="texttospeechbuttonto2"></span><br/>';
 
     translation2Element.innerHTML = translation;
 
@@ -956,7 +956,7 @@ function openCloseOptions(evt) {
         //     divOptions.innerHTML += '<p>错误 : 无法加载颜色拾取器 (已知在opera中存在此问题)</p>';
         // }
         //fields container
-        divOptionsFields = createElement('p');
+        divOptionsFields = createElement('p', {style: "margin:0px;padding:0px;line-height:160%;"});
         divOptions.appendChild(divOptionsFields);
 
         //从
@@ -970,7 +970,7 @@ function openCloseOptions(evt) {
 
         //到
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, ' 到: &nbsp;&nbsp;&nbsp;&nbsp;'));
+        divOptionsFields.appendChild(createElement('span', null, null, '到: &nbsp;&nbsp;&nbsp;&nbsp;'));
         divOptionsFields.appendChild(createElement('select', {
             id: 'optSelLangTo'
         },
@@ -980,7 +980,7 @@ function openCloseOptions(evt) {
 
         //到2
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, ' 到(2): '));
+        divOptionsFields.appendChild(createElement('span', null, null, '到(2): '));
         divOptionsFields.appendChild(createElement('select', {
             id: 'optSelLangTo2'
         },
@@ -992,36 +992,40 @@ function openCloseOptions(evt) {
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
             id: 'checkTTS',
-            type: 'checkbox'
+            type: 'checkbox',
+            style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '<span title="该功能有很多问题。你需要经常刷新页面启动.mp3文件。\n你需要先设置某种语言。\n如果您使用了“自动检测语言”，那么只有英语能够正确发音。" style="border-bottom:1px dashed">转换文本为语言</span>'));
+        divOptionsFields.appendChild(createElement('span', null, null, '<span title="该功能有很多问题。你需要经常刷新页面启动.mp3文件。\n你需要先设置某种语言。\n如果您使用了“自动检测语言”，那么只有英语能够正确发音。"> 转换文本为语言</span>'));
         getId('checkTTS').checked = GM_getValue('tts');
 
         //隐藏详细信息
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
             id: 'checkDetails',
-            type: 'checkbox'
+            type: 'checkbox',
+            style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '默认隐藏详细信息'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' 默认隐藏详细信息'));
         getId('checkDetails').checked = GM_getValue('details');
 
         //详情中显示备选翻译
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
             id: 'checkAlternatives',
-            type: 'checkbox'
+            type: 'checkbox',
+            style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '详情中显示备选翻译'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' 详情中显示备选翻译'));
         getId('checkAlternatives').checked = GM_getValue('alternatives');
 
         //解释中显示同义词
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
             id: 'checkSynonyms',
-            type: 'checkbox'
+            type: 'checkbox',
+            style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '解释中显示同义词'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' 解释中显示同义词'));
         getId('checkSynonyms').checked = GM_getValue('synonyms');
 
 
@@ -1030,7 +1034,7 @@ function openCloseOptions(evt) {
         divOptionsFields.appendChild(createElement('span', null, null, '字体大小: '));
         divOptionsFields.appendChild(createElement('select', {
             id: 'optFontSize',
-            style: 'width:128px'
+            style: 'width:141px'
         },
         null, '<option value="x-small">超小字(12px)</option><option value="small">小(13px)（默认）</option><option value="medium">中等(16px)</option><option value="large">大(18px)</option>'));
         getId('optFontSize').value = GM_getValue('fontsize') ? GM_getValue('fontsize') : 'small';
@@ -1041,7 +1045,7 @@ function openCloseOptions(evt) {
         divOptionsFields.appendChild(createElement('span', null, null, '文本颜色: '));
         divOptionsFields.appendChild(createElement('select', {
             id: 'optTextColor',
-            style: 'width:128px'
+            style: 'width:141px'
         },
         null, '<option value="Gray">灰       色(默认)</option><option value="Black">黑       色</option><option value="White">白   色</option><option value="CadetBlue">藏       青</option><option value="ForestGreen">葱     绿</option><option value="FireBrick">砖       红</option>'));
         getId('optTextColor').value = GM_getValue('textcolor') ? GM_getValue('textcolor') : 'Gray';
@@ -1051,18 +1055,20 @@ function openCloseOptions(evt) {
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
             id: 'checkCtrl',
-            type: 'checkbox'
+            type: 'checkbox',
+            style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '使用ctrl键'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' 使用ctrl键'));
         getId('checkCtrl').checked = GM_getValue('ctrl');
 
         //使用alt键
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
             id: 'checkAlt',
-            type: 'checkbox'
+            type: 'checkbox',
+            style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '使用alt键'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' 使用alt键'));
         getId('checkAlt').checked = GM_getValue('alt');
 
         //保存

@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.19
+// @version         1.20
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -859,16 +859,16 @@ function extractResult(gTradStringArray) {
      */
     var translation = '';
     // 0 - Full translation
-    translation += '<small><a href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
+    translation += '<small><a style="color:#1a0dab;" href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined' && arr[0][i][1] != null) translation += arr[0][i][1]; }
     translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
-    translation += '[' + GM_getValue('to', 'auto') + ']<em> ';
+    translation += '[' + GM_getValue('to', 'auto') + '] ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
-    translation += '</em> <span id="texttospeechbuttonto"></span><br/>';
+    translation += ' <span id="texttospeechbuttonto"></span><br/>';
     translation += '<span id="translation2Element"></span>';
     translation += '<span id="translation3Element"></span>';
-    translation += '<a id="toggleShowDetails" ' + (!GM_getValue('details', 'false') ? 'style="display:none"' : '') + '>Show details</a>';
-    translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"' : '') + '><a id="toggleHideDetails">Hide details</a><br/>';
+    translation += '<a id="toggleShowDetails" style="color:#000;' + (!GM_getValue('details', 'false') ? 'display:none;"' : '') + '>Show details</a>';
+    translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"' : '') + '><a style="color:#000;" id="toggleHideDetails">Hide details</a><br/>';
 
     // 1 - Grammar
     if (typeof arr[1] != 'undefined' && arr[1] != null ||
@@ -909,12 +909,12 @@ function extractResult(gTradStringArray) {
         // }
     }
 
-    if ((typeof arr[1] != 'undefined' && arr[1] != null ||
-         typeof arr[5] != 'undefined' && arr[5] != null ||
-         typeof arr[14] != 'undefined' && arr[14] != null) &&
-        (typeof arr[12] != 'undefined' && arr[12] != null)) {
-        translation += '<br/>';
-    }
+    // if ((typeof arr[1] != 'undefined' && arr[1] != null ||
+    //      typeof arr[5] != 'undefined' && arr[5] != null ||
+    //      typeof arr[14] != 'undefined' && arr[14] != null) &&
+    //     (typeof arr[12] != 'undefined' && arr[12] != null)) {
+    //     translation += '<br/>';
+    // }
 
     // 12 and 11 - Definitions and Synonyms
     if (typeof arr[12] != 'undefined' && arr[12] != null) {
@@ -946,7 +946,7 @@ function extractResult(gTradStringArray) {
 
     translation += '</span>'; // Detail end
 
-    getId('divResult').innerHTML = '<p style="margin:0px">' + translation + '</p>';
+    getId('divResult').innerHTML = '<p style="margin:0px;padding:0px;line-height:150%;">' + translation + '</p>';
     getId('translation2Element').appendChild(translation2Element); // Optional second translation
     getId('translation3Element').appendChild(translation3Element); // Optional third translation
     getId('toggleShowDetails').addEventListener('click', function () {
@@ -968,9 +968,9 @@ function extractResult(gTradStringArray) {
 function extractResult2(gTradStringArray) {
     var arr = eval(gTradStringArray);
     var translation = '';
-    translation += '#[' + GM_getValue('to2', 'auto') + ']<em>  ';
+    translation += '#[' + GM_getValue('to2', 'auto') + ']  ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
-    translation += '</em>  <span id="texttospeechbuttonto2"></span><br/>';
+    translation += '  <span id="texttospeechbuttonto2"></span><br/>';
     translation2Element.innerHTML = translation;
     var toText2 = '';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) toText2 += arr[0][i][0]; }
@@ -979,9 +979,9 @@ function extractResult2(gTradStringArray) {
 function extractResult3(gTradStringArray) {
     var arr = eval(gTradStringArray);
     var translation = '';
-    translation += '#[' + GM_getValue('to3', 'auto') + ']<em>  ';
+    translation += '#[' + GM_getValue('to3', 'auto') + ']  ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
-    translation += '</em>  <span id="texttospeechbuttonto3"></span><br/>';
+    translation += '  <span id="texttospeechbuttonto3"></span><br/>';
     translation3Element.innerHTML = translation;
     var toText3 = '';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) toText3 += arr[0][i][0]; }
@@ -1082,10 +1082,10 @@ function openCloseOptions(evt) {
         //  divOptions.innerHTML += '<p>Error : Cannot load color picker (Known issue on Opera)</p>';
         // }
         //fields container
-        divOptionsFields = createElement('p');
+        divOptionsFields = createElement('p', {style: "margin:0px;padding:0px;line-height:160%;"});
         divOptions.appendChild(divOptionsFields);
         //from
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;From: '));
+        divOptionsFields.appendChild(createElement('span', null, null, 'From: '));
         divOptionsFields.appendChild(createElement('select', {
                 id : 'optSelLangFrom'
             }, null, languagesGoogle));
@@ -1093,7 +1093,7 @@ function openCloseOptions(evt) {
         getId('optSelLangFrom').addEventListener('change', quickLookup, false);
         //to
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;To: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+        divOptionsFields.appendChild(createElement('span', null, null, 'To: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
         divOptionsFields.appendChild(createElement('select', {
                 id : 'optSelLangTo'
             }, null, languagesGoogle));
@@ -1101,7 +1101,7 @@ function openCloseOptions(evt) {
         getId('optSelLangTo').addEventListener('change', quickLookup, false);
         //to2
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;To 2: &nbsp;&nbsp;'));
+        divOptionsFields.appendChild(createElement('span', null, null, 'To 2: &nbsp;&nbsp;'));
         divOptionsFields.appendChild(createElement('select', {
                 id : 'optSelLangTo2'
             }, null, '<option value="Disabled">Disabled</option>' + languagesGoogle));
@@ -1109,7 +1109,7 @@ function openCloseOptions(evt) {
         getId('optSelLangTo2').addEventListener('change', quickLookup, false);
         //to3
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;To 3: &nbsp;&nbsp;'));
+        divOptionsFields.appendChild(createElement('span', null, null, 'To 3: &nbsp;&nbsp;'));
         divOptionsFields.appendChild(createElement('select', {
                 id : 'optSelLangTo3'
             }, null, '<option value="Disabled">Disabled</option>' + languagesGoogle));
@@ -1118,71 +1118,77 @@ function openCloseOptions(evt) {
         //use text to speech
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
-                id : 'checkTTS',
-                type : 'checkbox'
-            }));
-        divOptionsFields.appendChild(createElement('span', null, null, '<span title="The feature has many issues. You often have to refresh the page to launch the .mp3 file. If you use the langage auto-detection, you have to change the langage in the url of the new tab.">&nbsp;Display Text To speech</span>'));
+            id : 'checkTTS',
+            type : 'checkbox',
+            style: "margin-left:0px;"
+        }));
+        divOptionsFields.appendChild(createElement('span', null, null, '<span title="The feature has many issues. You often have to refresh the page to launch the .mp3 file. If you use the langage auto-detection, you have to change the langage in the url of the new tab."> Display Text To speech</span>'));
         getId('checkTTS').checked = GM_getValue('tts');
         //hide details
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
-                id : 'checkDetails',
-                type : 'checkbox'
-            }));
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;Hide details by default'));
+            id : 'checkDetails',
+            type : 'checkbox',
+            style: "margin-left:0px;"
+        }));
+        divOptionsFields.appendChild(createElement('span', null, null, ' Hide details by default'));
         getId('checkDetails').checked = GM_getValue('details');
 
         //show alternatives in details
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
             id: 'checkAlternatives',
-            type: 'checkbox'
+            type: 'checkbox',
+            style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;Show alternatives in details'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' Show alternatives in details'));
         getId('checkAlternatives').checked = GM_getValue('alternatives');
 
         //show synonyms in definitions
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
             id: 'checkSynonyms',
-            type: 'checkbox'
+            type: 'checkbox',
+            style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;Show synonyms in definitions'));
+        divOptionsFields.appendChild(createElement('span', null, null, ' Show synonyms in definitions'));
         getId('checkSynonyms').checked = GM_getValue('synonyms');
 
         //font size
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;Font size: &nbsp;&nbsp;'));
+        divOptionsFields.appendChild(createElement('span', null, null, 'Font size: &nbsp;&nbsp;'));
         divOptionsFields.appendChild(createElement('select', {
                 id : 'optFontSize',
-                style: 'width:128px'
+                style: 'width:141px'
             }, null, '<option value="x-small">Extra small</option><option value="small">Small (default)</option><option value="medium">Medium</option><option value="large">Large</option>'));
         getId('optFontSize').value = GM_getValue('fontsize') ? GM_getValue('fontsize') : 'small';
         getId('optFontSize').addEventListener('change', quickLookup, false);
         //text color
         divOptionsFields.appendChild(createElement('br'));
-        divOptionsFields.appendChild(createElement('span', null, null, '&nbsp;Text color: '));
+        divOptionsFields.appendChild(createElement('span', null, null, 'Text color: '));
         divOptionsFields.appendChild(createElement('select', {
                 id : 'optTextColor',
-                style: 'width:128px'
+                style: 'width:141px'
             }, null, '<option value="Gray">Gray (default)</option><option value="Black">Black</option><option value="White">White</option><option value="CadetBlue">CadetBlue</option><option value="ForestGreen">ForestGreen</option><option value="FireBrick">FireBrick</option>'));
         getId('optTextColor').value = GM_getValue('textcolor') ? GM_getValue('textcolor') : 'Gray';
         getId('optTextColor').addEventListener('change', quickLookup, false);
         //use ctrl
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
-                id : 'checkCtrl',
-                type : 'checkbox'
-            }));
-        divOptionsFields.appendChild(createElement('span', null, null, 'Use Ctrl key'));
+            id : 'checkCtrl',
+            type : 'checkbox',
+            style: "margin-left:0px;"
+        }));
+        divOptionsFields.appendChild(createElement('span', null, null, ' Use Ctrl key'));
         getId('checkCtrl').checked = GM_getValue('ctrl');
         //use alt
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('input', {
-                id : 'checkAlt',
-                type : 'checkbox'
-            }));
-        divOptionsFields.appendChild(createElement('span', null, null, 'Use Alt key'));
+            id : 'checkAlt',
+            type : 'checkbox',
+            style: "margin-left:0px;"
+        }));
+        divOptionsFields.appendChild(createElement('span', null, null, ' Use Alt key'));
         getId('checkAlt').checked = GM_getValue('alt');
         //save
         divOptionsFields.appendChild(createElement('br'));
