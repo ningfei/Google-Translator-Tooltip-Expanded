@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.20
+// @version         1.21
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -946,7 +946,7 @@ function extractResult(gTradStringArray) {
 
     translation += '</span>'; // Detail end
 
-    getId('divResult').innerHTML = '<p style="margin:0px;padding:0px;line-height:150%;">' + translation + '</p>';
+    getId('divResult').innerHTML = '<p style="margin:0px;padding:0px;line-height:150%;text-align:left;">' + translation + '</p>';
     getId('translation2Element').appendChild(translation2Element); // Optional second translation
     getId('translation3Element').appendChild(translation3Element); // Optional third translation
     getId('toggleShowDetails').addEventListener('click', function () {

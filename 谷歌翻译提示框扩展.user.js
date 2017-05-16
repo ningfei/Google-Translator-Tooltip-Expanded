@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.20
+// @version         1.21
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -807,7 +807,7 @@ function extractResult(gTradStringArray) {
 
     translation += '</span>'; // Detail end
 
-    getId('divResult').innerHTML = '<p style="margin:0px;padding:0px;line-height:150%;">' + translation + '</p>';
+    getId('divResult').innerHTML = '<p style="margin:0px;padding:0px;line-height:150%;text-align:left;">' + translation + '</p>';
     getId('translation2Element').appendChild(translation2Element); // Optional second translation
     getId('toggleShowDetails').addEventListener('click',
     function() {
