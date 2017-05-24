@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.21
+// @version         1.22
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -727,8 +727,8 @@ function extractResult(gTradStringArray) {
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0] != null) translation += arr[0][i][0]; }
     translation += ' <span id="texttospeechbuttonto"></span><br/>';
     translation += '<span id="translation2Element"></span>';
-    translation += '<a id="toggleShowDetails" style="color:#000;' + (!GM_getValue('details', 'false') ? 'display:none;"': '"') + '>显示详情▼</a>';
-    translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none;"': '') + '><a style="color:#000;" id="toggleHideDetails">隐藏详情▲</a><br/>';
+    translation += '<a id="toggleShowDetails" style="color:#000;' + (!GM_getValue('details', 'false') ? 'display:none;"' : '"') + '>显示详情▼</a>';
+    translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none;"' : '') + '><a style="color:#000;" id="toggleHideDetails">隐藏详情▲</a><br/>';
 
     // 1 - Grammar
     if (typeof arr[1] != 'undefined' && arr[1] != null ||

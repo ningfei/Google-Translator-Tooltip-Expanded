@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.21
+// @version         1.22
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -867,8 +867,8 @@ function extractResult(gTradStringArray) {
     translation += ' <span id="texttospeechbuttonto"></span><br/>';
     translation += '<span id="translation2Element"></span>';
     translation += '<span id="translation3Element"></span>';
-    translation += '<a id="toggleShowDetails" style="color:#000;' + (!GM_getValue('details', 'false') ? 'display:none;"' : '') + '>Show details</a>';
-    translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none"' : '') + '><a style="color:#000;" id="toggleHideDetails">Hide details</a><br/>';
+    translation += '<a id="toggleShowDetails" style="color:#000;' + (!GM_getValue('details', 'false') ? 'display:none;"' : '"') + '>Show details</a>';
+    translation += '<span id="divDetails" ' + (GM_getValue('details', 'false') ? 'style="display:none;"' : '') + '><a style="color:#000;" id="toggleHideDetails">Hide details</a><br/>';
 
     // 1 - Grammar
     if (typeof arr[1] != 'undefined' && arr[1] != null ||
