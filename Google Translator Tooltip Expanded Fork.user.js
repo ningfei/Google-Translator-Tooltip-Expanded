@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.22
+// @version         1.23
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -625,7 +625,7 @@ function showLookupIcon(evt) {
             style : 'background-color:transparent; color:#000000; position:absolute; top:' + (evt.clientY + window.pageYOffset + 10) + 'px; left:' + (evt.clientX + window.pageXOffset + 10) + 'px; padding:0px; z-index:10000; border-radius:2px;'
         });
     divLookup.appendChild(imgLookup.cloneNode(false));
-    divLookup.addEventListener('mouseover', lookup, false);
+    divLookup.addEventListener('mouseover', function(evt){setTimeout(lookup,parseInt(GM_getValue('delay')))}, false);
     body.appendChild(divLookup);
 }
 // Create the tooltip and launch the Google Translate request to get the translation
@@ -1190,6 +1190,16 @@ function openCloseOptions(evt) {
         }));
         divOptionsFields.appendChild(createElement('span', null, null, ' Use Alt key'));
         getId('checkAlt').checked = GM_getValue('alt');
+        //delay display
+        divOptionsFields.appendChild(createElement('br'));
+        divOptionsFields.appendChild(createElement('span', null, null, 'Delay '));
+        divOptionsFields.appendChild(createElement('input', {
+            id: 'delayDisplay',
+            type: 'text',
+            style: "height:20px;width:50px;padding:0px;text-align:center;",
+        }));
+        divOptionsFields.appendChild(createElement('span', null, null, ' ms'));
+        getId('delayDisplay').value = GM_getValue('delay') ? GM_getValue('delay') : '0';
         //save
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('a', {
@@ -1214,7 +1224,9 @@ function openCloseOptions(evt) {
         getId('optionsLink').style.visibility = 'visible';
     }
 }
+
 function saveOptions(evt) {
+
     var backgroundColor = getId('divDic').style.backgroundColor;
     var from = getId('optSelLangFrom').value;
     var to = getId('optSelLangTo').value;
@@ -1228,6 +1240,8 @@ function saveOptions(evt) {
     var textcolor = getId('optTextColor').value;
     var ctrl = getId('checkCtrl').checked;
     var alt = getId('checkAlt').checked;
+    var delay = getId('delayDisplay').value;
+
     GM_setValue('backgroundColor', backgroundColor);
     GM_setValue('from', from);
     GM_setValue('to', to);
@@ -1241,23 +1255,33 @@ function saveOptions(evt) {
     GM_setValue('textcolor', textcolor);
     GM_setValue('ctrl', ctrl);
     GM_setValue('alt', alt);
+    GM_setValue('delay', delay);
+
     quickLookup();
     getId('divDic').removeChild(getId('divOpt'));
     getId('optionsLink').style.visibility = 'visible';
 }
+
 function resetOptions(evt) {
+
     GM_deleteValue('backgroundColor');
     GM_deleteValue('from');
     GM_deleteValue('to');
     GM_deleteValue('to2');
     GM_deleteValue('to3');
     GM_deleteValue('tts');
+    GM_deleteValue('details');
+    GM_deleteValue('alternatives');
+    GM_deleteValue('synonyms');
     GM_deleteValue('fontsize');
     GM_deleteValue('textcolor');
     GM_deleteValue('ctrl');
     GM_deleteValue('alt');
+    GM_deleteValue('delay');
+
     getId('divDic').parentNode.removeChild(getId('divDic'));
 }
+
 function css() {
     var style = createElement('style', {
             type : "text/css"

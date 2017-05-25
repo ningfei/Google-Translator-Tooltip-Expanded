@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.22
+// @version         1.23
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -493,7 +493,7 @@ function showLookupIcon(evt) {
         style: 'background-color:transparent; color:#000000; position:absolute; top:' + (evt.clientY + window.pageYOffset + 10) + 'px; left:' + (evt.clientX + window.pageXOffset + 10) + 'px; padding:0px; z-index:10000; border-radius:2px;'
     });
     divLookup.appendChild(imgLookup.cloneNode(false));
-    divLookup.addEventListener('mouseover', lookup, false);
+    divLookup.addEventListener('mouseover', function(evt){setTimeout(lookup,parseInt(GM_getValue('delay')))}, false);
     body.appendChild(divLookup);
 }
 
@@ -1028,7 +1028,6 @@ function openCloseOptions(evt) {
         divOptionsFields.appendChild(createElement('span', null, null, ' 解释中显示同义词'));
         getId('checkSynonyms').checked = GM_getValue('synonyms');
 
-
         //字体大小
         divOptionsFields.appendChild(createElement('br'));
         divOptionsFields.appendChild(createElement('span', null, null, '字体大小: '));
@@ -1070,6 +1069,17 @@ function openCloseOptions(evt) {
         }));
         divOptionsFields.appendChild(createElement('span', null, null, ' 使用alt键'));
         getId('checkAlt').checked = GM_getValue('alt');
+
+        //延迟显示
+        divOptionsFields.appendChild(createElement('br'));
+        divOptionsFields.appendChild(createElement('span', null, null, '延迟 '));
+        divOptionsFields.appendChild(createElement('input', {
+            id: 'delayDisplay',
+            type: 'text',
+            style: "height:20px;width:50px;padding:0px;text-align:center;",
+        }));
+        divOptionsFields.appendChild(createElement('span', null, null, ' 毫秒显示'));
+        getId('delayDisplay').value = GM_getValue('delay') ? GM_getValue('delay') : '0';
 
         //保存
         divOptionsFields.appendChild(createElement('br'));
@@ -1116,6 +1126,7 @@ function saveOptions(evt) {
     var textcolor = getId('optTextColor').value;
     var ctrl = getId('checkCtrl').checked;
     var alt = getId('checkAlt').checked;
+    var delay = getId('delayDisplay').value;
 
     GM_setValue('backgroundColor', backgroundColor);
     GM_setValue('from', from);
@@ -1129,6 +1140,7 @@ function saveOptions(evt) {
     GM_setValue('textcolor', textcolor);
     GM_setValue('ctrl', ctrl);
     GM_setValue('alt', alt);
+    GM_setValue('delay', delay);
 
     quickLookup();
     getId('divDic').removeChild(getId('divOpt'));
@@ -1142,10 +1154,14 @@ function resetOptions(evt) {
     GM_deleteValue('to');
     GM_deleteValue('to2');
     GM_deleteValue('tts');
+    GM_deleteValue('details');
+    GM_deleteValue('alternatives');
+    GM_deleteValue('synonyms');
     GM_deleteValue('fontsize');
     GM_deleteValue('textcolor');
     GM_deleteValue('ctrl');
     GM_deleteValue('alt');
+    GM_deleteValue('delay');
 
     getId('divDic').parentNode.removeChild(getId('divDic'));
 }
