@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.23
+// @version         1.24
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -859,7 +859,7 @@ function extractResult(gTradStringArray) {
      */
     var translation = '';
     // 0 - Full translation
-    translation += '<small><a style="color:#1a0dab;" href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
+    translation += '<small><a style="color:#1a0dab;" target="_blank" href="https://' + googleDomain + '/#' + GM_getValue('from', 'auto') + '/' + GM_getValue('to', 'auto') + '/' + txtSel + '">[' + arr[2] + '] ';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][1] != 'undefined' && arr[0][i][1] != null) translation += arr[0][i][1]; }
     translation += '</a> <span id="texttospeechbuttonfrom"></span></small><br/>';
     translation += '[' + GM_getValue('to', 'auto') + '] ';
