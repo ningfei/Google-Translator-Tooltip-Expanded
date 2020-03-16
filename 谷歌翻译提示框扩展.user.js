@@ -614,22 +614,18 @@ function init_google_value_tk() {
 }
 
 function init_google_value_tk_parse(responseText) {
-    // TKK=eval('((function(){var a\x3d4264492758;var b\x3d-1857761911;return 406375+\x27.\x27+(a+b)})())');
-    var res = /;TKK=(.*?\'\));/i.exec(responseText);
+    var res = /tkk:\s?'(.+?)'/i.exec(responseText);
     if (res != null) {
-        var res2 = /var a=(.*?);.*?var b=(.*?);.*?return (\d+)/i.exec(res[1].replace(/\\x3d/g, '='));
-        if (res2 != null) {
-            var tkk = Number(res2[3]) + '.' + (Number(res2[1]) + Number(res2[2]));
-            GM_setValue('google_value_tk', tkk);
-        }
+        GM_setValue('google_value_tk', res[1]);
     };
 }
 
 // return token for the new API
 function googleTK(text) {
-    // view-source:https://translate.google.com/translate/releases/twsfe_w_20151214_RC03/r/js/desktop_module_main.js && TKK from HTML
+    // view-source:https://translate.google.com/translate/releases/twsfe_w_20160620_RC00/r/js/desktop_module_main.js && TKK from HTML
     var uM = GM_getValue('google_value_tk');
-    if (uM == 'undefined' || uM == null) {
+    var now = Math.floor(Date.now() / 3600000);
+    if (uM == 'undefined' || uM == null || Number(uM.split('.')[0]) !== now) {
         init_google_value_tk();
         uM = GM_getValue('google_value_tk');
     };
