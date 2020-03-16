@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.24
+// @version         1.25
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
