@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.25
+// @version         1.26
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -757,6 +757,8 @@ function init_google_value_tk_parse(responseText) {
     var res = /tkk:\s?'(.+?)'/i.exec(responseText);
     if (res != null) {
         GM_setValue('google_value_tk', res[1]);
+    }else{
+        GM_setValue('google_value_tk', '427110.1469889687');
     };
 }
 

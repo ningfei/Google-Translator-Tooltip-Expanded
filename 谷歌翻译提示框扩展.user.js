@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.25
+// @version         1.26
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -617,6 +617,8 @@ function init_google_value_tk_parse(responseText) {
     var res = /tkk:\s?'(.+?)'/i.exec(responseText);
     if (res != null) {
         GM_setValue('google_value_tk', res[1]);
+    }else{
+        GM_setValue('google_value_tk', '427110.1469889687');
     };
 }
 
