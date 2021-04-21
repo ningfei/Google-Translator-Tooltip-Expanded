@@ -3,7 +3,7 @@
 // @description     Translates the selected text into a tooltip automatically. Fork from https://greasyfork.org/scripts/5727/
 // @namespace       https://greasyfork.org/scripts/16204/
 // @homepage        https://greasyfork.org/scripts/16204/
-// @version         1.26
+// @version         1.27
 // @icon            http://translate.google.com/favicon.ico
 // @include         http*
 // @include         https*
@@ -737,14 +737,13 @@ function quickLookup() {
 }
 
 function init_google_value_tk() {
-    var url = "https://" + googleDomain;
-    var timeout = setTimeout( function(){ this.abort(); }, 2000);
+    var url = "https://" + googleDomain + "/translate_a/element.js";
     GM_xmlhttpRequest({
         method: "GET",
         url: url,
         onreadystatechange: function(resp) {
             if (resp.readyState == 4) {
-                clearTimeout(timeout);
+                clearTimeout(setTimeout( function(){ this.abort(); }, 2000));
                 if (resp.status == 200) {
                     init_google_value_tk_parse(resp.responseText);
                 }
@@ -754,11 +753,9 @@ function init_google_value_tk() {
 }
 
 function init_google_value_tk_parse(responseText) {
-    var res = /tkk:\s?'(.+?)'/i.exec(responseText);
+    var res = /c\._ctkk='(.+?)'/i.exec(responseText);
     if (res != null) {
         GM_setValue('google_value_tk', res[1]);
-    }else{
-        GM_setValue('google_value_tk', '427110.1469889687');
     };
 }
 
@@ -766,10 +763,11 @@ function init_google_value_tk_parse(responseText) {
 function googleTK(text) {
     // view-source:https://translate.google.com/translate/releases/twsfe_w_20160620_RC00/r/js/desktop_module_main.js && TKK from HTML
     var uM = GM_getValue('google_value_tk');
-    var now = Math.floor(Date.now() / 3600000);
-    if (uM == 'undefined' || uM == null || Number(uM.split('.')[0]) !== now) {
+    if (uM == 'undefined' || uM == null) {
         init_google_value_tk();
-        uM = GM_getValue('google_value_tk');
+        uM = "427110.1469889687";
+    } else if (Number(uM.split('.')[0]) !== Math.floor(Date.now() / 3600000)) {
+        init_google_value_tk();
     };
     var cb="&";
     var k="";
