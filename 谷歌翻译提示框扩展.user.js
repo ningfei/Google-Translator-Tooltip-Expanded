@@ -578,7 +578,7 @@ function openCloseOptions(evt) {
             type: 'checkbox',
             style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '<span title="该功能有很多问题。你需要经常刷新页面启动.mp3文件。\n你需要先设置某种语言。\n如果您使用了“自动检测语言”，那么只有英语能够正确发音。"> 转换文本为语言</span>'));
+        divOptionsFields.appendChild(createElement('span', null, null, '<span title="该功能有很多问题。你需要经常刷新页面启动.mp3文件。\n你需要先设置某种语言。\n如果您使用了“自动检测语言”，那么只有英语能够正确发音。"> 转换文本为语音</span>'));
         getId('checkTTS').checked = GM_getValue('tts');
 
         //隐藏详细信息

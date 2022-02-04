@@ -571,7 +571,7 @@ function openCloseOptions(evt) {
             type : 'checkbox',
             style: "margin-left:0px;"
         }));
-        divOptionsFields.appendChild(createElement('span', null, null, '<span title="The feature has many issues. You often have to refresh the page to launch the .mp3 file. If you use the langage auto-detection, you have to change the langage in the url of the new tab."> Display Text To speech</span>'));
+        divOptionsFields.appendChild(createElement('span', null, null, '<span title="The feature has many issues. You often have to refresh the page to launch the .mp3 file. If you use the langage auto-detection, you have to change the langage in the url of the new tab."> Display Text To Speech</span>'));
         getId('checkTTS').checked = GM_getValue('tts');
         //hide details
         divOptionsFields.appendChild(createElement('br'));
