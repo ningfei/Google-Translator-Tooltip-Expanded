@@ -3,7 +3,7 @@
 // @description     谷歌翻译选中文本至提示框。Fork自https://greasyfork.org/scripts/662/
 // @namespace       https://greasyfork.org/scripts/16203/
 // @homepage        https://greasyfork.org/scripts/16203/
-// @version         1.28
+// @version         1.29
 // @icon            http://translate.google.com/favicon.ico
 // @include         *
 // @grant           GM_getValue
@@ -146,8 +146,11 @@ function lookup(evt) {
         id: 'optionsLink',
         href: HREF_NO,
         style: 'opacity:0.2; position:absolute; bottom:3px; right:13px; font-size:18px; text-decoration:none!important;background:#528DDF;padding:1px;color:#fff;border-radius:6px 6px 6px 6px;border:2px solid #EEEEEE;font-weight:bold;width:20px;text-align:center;display:block;'
-    },
-    'click openCloseOptions false', '+');
+    }, {
+        type: 'click',
+        handler: openCloseOptions,
+        capture: false
+    }, '+');
     divDic.appendChild(optionLink);
     optionLink.addEventListener('mouseover',
     function(e) {
@@ -312,7 +315,12 @@ function Request(txt, sl, tl, parse) {
 }
 
 function extractResult(gTradStringArray) {
-    var arr = eval(gTradStringArray); // eval is used to transform the string to an array. I alse made a custom parsing function, but it doesn't handle antislashed characters, so I prefer using eval()
+    var arr = parseTranslationResponse(gTradStringArray);
+    if (!arr) {
+        // Handle error case
+        getId('divResult').innerHTML = 'Translation error occurred';
+        return;
+    }
     /*
         Content of the gTrad array :
         0 / 0:Translation 1:Source text
@@ -436,7 +444,12 @@ function extractResult(gTradStringArray) {
 }
 
 function extractResult2(gTradStringArray) {
-    var arr = eval(gTradStringArray);
+    var arr = parseTranslationResponse(gTradStringArray);
+    if (!arr) {
+        // Handle error case
+        getId('divResult').innerHTML = 'Translation error occurred';
+        return;
+    }
 
     var translation = '';
     translation += '[' + GM_getValue('to2', 'auto') + '] ';
@@ -448,6 +461,45 @@ function extractResult2(gTradStringArray) {
     var toText2 = '';
     for (var i = 0; i < arr[0].length; i++) { if (typeof arr[0][i][0] != 'undefined' && arr[0][i][0]!=null) toText2 += arr[0][i][0]; }
     addTextTospeechLink(getId('texttospeechbuttonto2'), GM_getValue('to2', 'auto') == 'auto' ? 'en': GM_getValue('to2', 'auto'), toText2);
+}
+
+function parseTranslationResponse(gTradStringArray) {
+    // If it's already an array, return it
+    if (Array.isArray(gTradStringArray)) {
+        return gTradStringArray;
+    }
+
+    // Remove any leading/trailing whitespace
+    let str = gTradStringArray.trim();
+
+    // Handle common escaping issues
+    str = str
+        .replace(/\\x/g, '\\u00') // Convert \x escapes to \u escapes
+        .replace(/\r?\n/g, '\\n') // Handle actual newlines
+        .replace(/\\/g, '\\\\')   // Escape backslashes
+        .replace(/\\\\"/g, '\\"') // Fix double-escaped quotes
+        .replace(/\\\\n/g, '\\n') // Fix double-escaped newlines
+        .replace(/\\\\/g, '\\');  // Fix over-escaped backslashes
+
+    try {
+        // Try parsing directly
+        return JSON.parse(str);
+    } catch (e1) {
+        try {
+            // If the string isn't wrapped in brackets, wrap it
+            if (!str.startsWith('[')) {
+                str = '[' + str + ']';
+            }
+            return JSON.parse(str);
+        } catch (e2) {
+            // If both attempts fail, log the error and the string for debugging
+            console.error('Failed to parse translation response');
+            console.log('Original string:', gTradStringArray);
+            console.log('Processed string:', str);
+            console.error('Parse error:', e2);
+            return null;
+        }
+    }
 }
 
 function addTextTospeechLink(element, lang, text) {
@@ -669,24 +721,33 @@ function openCloseOptions(evt) {
         divOptionsFields.appendChild(createElement('a', {
             href: HREF_NO,
             class: "gootranslink"
-        },
-        'click saveOptions false', '保存'));
+        }, {
+        type: 'click',
+        handler: saveOptions,
+        capture: false
+        }, '保存'));
 
         //重置
         divOptionsFields.appendChild(createElement('span', null, null, ' - '));
         divOptionsFields.appendChild(createElement('a', {
             href: HREF_NO,
             class: "gootranslink"
-        },
-        'click resetOptions false', '重置'));
+        }, {
+            type: 'click',
+            handler: resetOptions,
+            capture: false
+        }, '重置'));
 
         //取消
         divOptionsFields.appendChild(createElement('span', null, null, ' - '));
         divOptionsFields.appendChild(createElement('a', {
             href: HREF_NO,
             class: "gootranslink"
-        },
-        'click openCloseOptions false', '取消'));
+        }, {
+            type: 'click',
+            handler: openCloseOptions,
+            capture: false
+        }, '取消'));
 
     } else // 隐藏选项
     {
@@ -760,16 +821,15 @@ function css() {
 /*
  *简短的函数来代替 document.createElement document.getElementById 和document.getElementsByTagName
  */
-function createElement(type, attrArray, evtListener, html) {
+function createElement(type, attrArray, eventObj, html) {
     var node = document.createElement(type);
 
     for (var attr in attrArray) if (attrArray.hasOwnProperty(attr)) {
         node.setAttribute(attr, attrArray[attr]);
     }
 
-    if (evtListener) {
-        var a = evtListener.split(' ');
-        node.addEventListener(a[0], eval(a[1]), eval(a[2]));
+    if (eventObj) {
+        node.addEventListener(eventObj.type, eventObj.handler, eventObj.capture || false);
     }
 
     if (html) node.innerHTML = html;
